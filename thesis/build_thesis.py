@@ -496,17 +496,12 @@ CHAPTERS = [
         "3.5 Algorithm Map for HERO Workloads",
     ]),
     ("Chapter 4 — Classical AI/ML Background", [
-        "4.1 Support Vector Machines and Kernel Methods",
-        "4.2 Random Forest and Gradient Boosting",
-        "4.3 K-Nearest Neighbors",
         "4.4 Evaluation Metrics: Accuracy, Precision, Recall, F1",
-        "4.5 Multi-Run Statistical Validation",
     ]),
     ("Chapter 5 — Cloud Computing and Cybersecurity Context", [
         "5.1 Heterogeneous Cloud Tiers (CPU, GPU, QPU)",
         "5.2 Cloud Quantum Services: IBM Quantum, AWS Braket, Azure Quantum",
         "5.3 Network Intrusion Detection",
-        "5.4 Energy and Power Usage Effectiveness in Datacenters",
     ]),
     ("Chapter 6 — Literature Review and Gap Analysis", [
         "6.1 Quantum Machine Learning",
@@ -548,22 +543,17 @@ CHAPTERS = [
     ]),
     ("Chapter 11 — Cross-Workload Analysis", [
         "11.1 Two Contrasting Verdicts",
-        "11.2 Pareto Frontier",
         "11.3 Workload-Aware Allocation Rule",
         "11.4 Cross-over Projections",
     ]),
     ("Chapter 12 — Discussion", [
         "12.1 Implications for Cloud Architects",
-        "12.2 Implications for Quantum Researchers",
-        "12.3 Implications for Cybersecurity Practitioners",
         "12.4 Threats to Validity",
     ]),
     ("Chapter 13 — Conclusion and Future Work", [
         "13.1 Summary of Contributions",
         "13.2 Limitations",
         "13.3 Future Work: Real Hardware",
-        "13.4 Future Work: Additional Workloads",
-        "13.5 Future Work: Production Deployment",
         "13.6 Closing Remarks",
     ]),
 ]
@@ -652,9 +642,17 @@ def render_item(doc, item):
             return
         text = item[1]
         if kind == "eq":
-            add_para(doc, text, size=12, italic=True,
-                     align=WD_ALIGN_PARAGRAPH.CENTER, space_before=6,
-                     space_after=10)
+            # Compact left-aligned monospace; no italic, no centering.
+            # Works for both inline equations and pseudocode/algorithm blocks.
+            p = doc.add_paragraph()
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after  = Pt(0)
+            p.paragraph_format.line_spacing = 1.0
+            p.paragraph_format.left_indent  = Cm(0.6)
+            run = p.add_run(text)
+            set_run_font(run, name="Consolas", size=10,
+                         bold=False, italic=False)
+            return
         elif kind == "fig_caption":
             add_para(doc, text, size=11, italic=True,
                      align=WD_ALIGN_PARAGRAPH.CENTER,
@@ -1418,7 +1416,7 @@ SECTION_CONTENT = {
 
         ("sub", "Theoretical Advantage"),
 
-        "Liu, Arunachalam and Temme [36] proved in 2021 that for a "
+        "Liu, Arunachalam and Temme proved in 2021 that for a "
         "constructed family of data distributions related to the "
         "discrete-logarithm problem, no classical algorithm can match "
         "the quantum-kernel classifier in polynomial time under "
@@ -1997,7 +1995,7 @@ SECTION_CONTENT = {
         "contributes to the second strand.",
 
         "QML for security is a small literature. Kalinin and "
-        "Krundyshev [47] surveyed quantum machine learning "
+        "Krundyshev surveyed quantum machine learning "
         "techniques for intrusion detection in 2023 and reported "
         "encouraging accuracy on small-scale, simulation-only "
         "experiments; earlier work applied quantum kernels to "
@@ -3829,7 +3827,7 @@ SECTION_CONTENT = {
         "motivated -- for example, molecular fingerprints, quantum-state "
         "tomography data, and certain graph-structured inputs with "
         "exponential classical feature maps. Liu, Arunachalam, and Temme "
-        "[36] gave the first rigorous quantum speed-up for a learning "
+        "gave the first rigorous quantum speed-up for a learning "
         "problem; subsequent work should target instances of similar "
         "structure rather than re-run QSVM on whatever tabular benchmark "
         "is available.",
@@ -4648,23 +4646,6 @@ REFERENCES_LIST = [
     "[31] AWS, \"Amazon EC2 instance pricing,\" Amazon Web Services, 2026. [Online]. Available: https://aws.amazon.com/ec2/pricing/on-demand/",
     "[32] AWS, \"Amazon Braket pricing,\" Amazon Web Services, 2026. [Online]. Available: https://aws.amazon.com/braket/pricing/",
     "[33] IBM, \"IBM Quantum pricing,\" IBM Quantum, 2026. [Online]. Available: https://quantum-computing.ibm.com/services/resources",
-    "[34] Microsoft, \"Azure Quantum pricing,\" Microsoft Azure, 2026. [Online]. Available: https://azure.microsoft.com/en-us/pricing/details/azure-quantum/",
-    "[35] M. Cerezo et al., \"Variational quantum algorithms,\" Nat. Rev. Phys., vol. 3, no. 9, pp. 625-644, Sep. 2021, doi: 10.1038/s42254-021-00348-9.",
-    "[36] J. Liu, A. Arunachalam, and K. Temme, \"A rigorous and robust quantum speed-up in supervised machine learning,\" Nat. Phys., vol. 17, no. 9, pp. 1013-1017, Sep. 2021, doi: 10.1038/s41567-021-01287-z.",
-    "[37] W. Shi, J. Cao, Q. Zhang, Y. Li, and L. Xu, \"Edge computing: Vision and challenges,\" IEEE Internet Things J., vol. 3, no. 5, pp. 637-646, Oct. 2016, doi: 10.1109/JIOT.2016.2579198.",
-    "[38] P. Mach and Z. Becvar, \"Mobile edge computing: A survey on architecture and computation offloading,\" IEEE Commun. Surv. Tutor., vol. 19, no. 3, pp. 1628-1656, 2017, doi: 10.1109/COMST.2017.2682318.",
-    "[39] M. Satyanarayanan, \"The emergence of edge computing,\" Computer, vol. 50, no. 1, pp. 30-39, Jan. 2017, doi: 10.1109/MC.2017.9.",
-    "[40] Y. Mao, C. You, J. Zhang, K. Huang, and K. B. Letaief, \"A survey on mobile edge computing: The communication perspective,\" IEEE Commun. Surv. Tutor., vol. 19, no. 4, pp. 2322-2358, 2017, doi: 10.1109/COMST.2017.2745201.",
-    "[41] S. I. Siam et al., \"Artificial intelligence of things: A survey,\" ACM Trans. Sensor Netw., vol. 21, no. 1, pp. 1-75, Jan. 2025, doi: 10.1145/3690633.",
-    "[42] B. Alotaibi, \"A survey on industrial Internet of Things security: Requirements, attacks, AI-based solutions, and edge computing opportunities,\" Sensors, vol. 23, no. 17, p. 7470, Aug. 2023, doi: 10.3390/s23177470.",
-    "[43] Y. Meidan et al., \"N-BaIoT: Network-based detection of IoT botnet attacks using deep autoencoders,\" IEEE Pervasive Comput., vol. 17, no. 3, pp. 12-22, Jul.-Sep. 2018, doi: 10.1109/MPRV.2018.03367731.",
-    "[44] V. Mothukuri et al., \"A survey on security and privacy of federated learning,\" Future Gener. Comput. Syst., vol. 115, pp. 619-640, Feb. 2021, doi: 10.1016/j.future.2020.10.007.",
-    "[45] Z. Zhou, X. Chen, E. Li, L. Zeng, K. Luo, and J. Zhang, \"Edge intelligence: Paving the last mile of artificial intelligence with edge computing,\" Proc. IEEE, vol. 107, no. 8, pp. 1738-1762, Aug. 2019, doi: 10.1109/JPROC.2019.2918951.",
-    "[46] C. Chen et al., \"Energy-aware scheduling for high-performance computing systems: A survey,\" Energies, vol. 16, no. 2, p. 890, Jan. 2023, doi: 10.3390/en16020890.",
-    "[47] M. Kalinin and V. Krundyshev, \"Security intrusion detection using quantum machine learning techniques,\" J. Comput. Virol. Hacking Tech., vol. 19, no. 1, pp. 125-136, Mar. 2023, doi: 10.1007/s11416-022-00435-0.",
-    "[48] Qiskit Aer contributors, \"Qiskit Aer: High performance simulator for quantum circuits,\" GitHub repository, 2024. [Online]. Available: https://github.com/Qiskit/qiskit-aer",
-    "[49] D. P. DiVincenzo, \"The physical implementation of quantum computation,\" Fortschritte der Physik, vol. 48, no. 9-11, pp. 771-783, Sep. 2000.",
-    "[50] National Institute of Standards and Technology, \"Post-quantum cryptography standardization,\" NIST, 2024. [Online]. Available: https://csrc.nist.gov/projects/post-quantum-cryptography",
 ]
 
 for _ref in REFERENCES_LIST:
@@ -4694,15 +4675,7 @@ APPENDICES = [
          "B.2 Installing Dependencies",
          "B.3 Running the Full Pipeline",
          "B.4 Inspecting CSV and Plot Outputs"]),
-    ("Appendix C — Additional Plots",
-        ["C.1 Per-Task Energy Breakdown by Tier",
-         "C.2 Multi-Run Convergence Traces",
-         "C.3 Pipeline Timeline (Gantt)"]),
-    ("Appendix D — Extended Results Tables",
-        ["D.1 Per-Run Cybersecurity Statistics",
-         "D.2 Per-Run VQE Statistics",
-         "D.3 Cloud Pricing Snapshot (April 2026)"]),
-    ("Appendix E — Open Source Resources, Website, and Live Simulator",
+    ("Appendix C — Open Source Resources, Website, and Live Simulator",
         ["E.1 Public Code Repository",
          "E.2 Companion Website",
          "E.3 Live Interactive Simulator",
