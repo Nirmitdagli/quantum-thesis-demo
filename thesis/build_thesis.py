@@ -4462,7 +4462,7 @@ SECTION_CONTENT = {
 
         ("sub", "Repository URL"),
 
-        ("bullet", "https://github.com/[GITHUB_USERNAME]/quantum-thesis-demo"),
+        ("bullet", "https://github.com/Nirmitdagli/quantum-thesis-demo"),
 
         ("bullet", "Branch: main (tagged v1.0 corresponding to this "
          "thesis submission)."),
@@ -4496,7 +4496,7 @@ SECTION_CONTENT = {
 
         ("sub", "Website URL"),
 
-        ("bullet", "https://[GITHUB_USERNAME].github.io/quantum-thesis-demo/"),
+        ("bullet", "https://Nirmitdagli.github.io/quantum-thesis-demo/"),
 
         "The website is served from the website/ directory of the "
         "code repository via GitHub Pages. It includes:",
@@ -4525,7 +4525,7 @@ SECTION_CONTENT = {
 
         ("sub", "Live Simulator URL"),
 
-        ("bullet", "https://[GITHUB_USERNAME].github.io/quantum-"
+        ("bullet", "https://Nirmitdagli.github.io/quantum-"
          "thesis-demo/simulator.html"),
 
         "Use cases for the live simulator:",
@@ -4551,7 +4551,7 @@ SECTION_CONTENT = {
 
         ("sub", "Reproduction Steps"),
 
-        ("eq", "git clone https://github.com/[GITHUB_USERNAME]/"
+        ("eq", "git clone https://github.com/Nirmitdagli/"
          "quantum-thesis-demo.git"),
         ("eq", "cd quantum-thesis-demo"),
         ("eq", "pip install -r requirements.txt"),
@@ -4584,7 +4584,7 @@ SECTION_CONTENT = {
         ("eq", "  school  = {Quinnipiac University},"),
         ("eq", "  year    = {2026},"),
         ("eq", "  month   = {May},"),
-        ("eq", "  url     = {https://github.com/[GITHUB_USERNAME]/"
+        ("eq", "  url     = {https://github.com/Nirmitdagli/"
          "quantum-thesis-demo}"),
         ("eq", "}"),
     ],
