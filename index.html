@@ -1011,9 +1011,15 @@ footer strong{color:#a0a0c0}
 
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
-  const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+  const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0,rootMargin:'0px 0px 0px 0px'});
   document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
-  document.querySelectorAll('nav a[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'})})});
+  // Safety: force-show any .fade-in section the user navigates to via #hash
+  const showHashSection=()=>{const id=location.hash.slice(1);if(!id)return;const el=document.getElementById(id);if(el&&el.classList.contains('fade-in'))el.classList.add('visible');};
+  showHashSection();
+  window.addEventListener('hashchange',()=>setTimeout(showHashSection,50));
+  // Final safety net: after 2s, force-show ALL visible fade-in sections
+  setTimeout(()=>{document.querySelectorAll('.fade-in:not(.visible)').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<window.innerHeight&&r.bottom>0)el.classList.add('visible');});},2000);
+  document.querySelectorAll('nav a[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();const target=document.querySelector(l.getAttribute('href'));if(target){target.classList.add('visible');target.scrollIntoView({behavior:'smooth',block:'start'});}})});
   window.addEventListener('scroll',()=>{const n=document.querySelector('nav');n.style.background=window.scrollY>50?'rgba(10,10,26,.97)':'rgba(10,10,26,.92)'});
 });
 </script>
