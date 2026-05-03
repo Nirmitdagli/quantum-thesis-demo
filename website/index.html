@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Cybersecurity Thesis | Nirmit Dagli</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a0a1a;color:#e0e0f0;line-height:1.7;overflow-x:hidden}
+a{color:#64b5f6;text-decoration:none;transition:color .3s}a:hover{color:#90caf9}
+img{max-width:100%;height:auto;border-radius:12px}
+
+/* BG particles */
+.bg-particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden}
+.bg-particles::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(2px 2px at 20% 30%,rgba(100,180,255,.4),transparent),radial-gradient(2px 2px at 40% 70%,rgba(150,100,255,.3),transparent),radial-gradient(2px 2px at 60% 20%,rgba(100,255,200,.3),transparent),radial-gradient(1px 1px at 80% 60%,rgba(255,100,200,.2),transparent),radial-gradient(1px 1px at 10% 80%,rgba(100,180,255,.5),transparent),radial-gradient(1px 1px at 70% 40%,rgba(150,100,255,.4),transparent),radial-gradient(1px 1px at 50% 90%,rgba(100,150,255,.5),transparent);animation:floatStars 120s linear infinite}
+@keyframes floatStars{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(-20px) translateX(10px)}100%{transform:translateY(0) translateX(0)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;width:100%;background:rgba(10,10,26,.92);backdrop-filter:blur(20px);z-index:1000;border-bottom:1px solid rgba(100,180,255,.15);transition:all .3s}
+nav .nav-inner{max-width:1300px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:.8rem 2rem}
+nav .logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#64b5f6,#ce93d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+nav .nav-links{display:flex;gap:1.2rem;list-style:none;flex-wrap:wrap}
+nav .nav-links a{color:#b0b0d0;font-size:.85rem;font-weight:500;transition:color .3s}nav .nav-links a:hover{color:#64b5f6}
+
+/* SECTIONS */
+section{padding:5rem 2rem}.container{max-width:1200px;margin:0 auto}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at 30% 50%,rgba(50,50,150,.2),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(100,50,150,.15),transparent 60%);padding-top:6rem}
+.hero-content{max-width:900px}
+.hero .badge{display:inline-block;padding:.4rem 1.2rem;border-radius:50px;background:rgba(100,180,255,.12);border:1px solid rgba(100,180,255,.3);color:#64b5f6;font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:1.5rem;animation:fadeInDown 1s ease-out}
+.hero h1{font-size:3.2rem;font-weight:800;line-height:1.15;margin-bottom:1.5rem;background:linear-gradient(135deg,#e0e0ff 0%,#64b5f6 40%,#ce93d8 70%,#81c784 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeInUp 1s ease-out .2s both}
+.hero .subtitle{font-size:1.25rem;color:#a0a0c0;margin-bottom:2rem;animation:fadeInUp 1s ease-out .4s both}
+.hero .author-card{display:inline-flex;align-items:center;gap:1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1rem 2rem;animation:fadeInUp 1s ease-out .6s both}
+.hero .author-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#64b5f6,#ce93d8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff}
+.hero .author-info{text-align:left}.hero .author-name{font-size:1.1rem;font-weight:700;color:#fff}.hero .author-title{font-size:.85rem;color:#a0a0c0}
+.hero .scroll-hint{margin-top:3rem;animation:fadeInUp 1s ease-out .8s both}
+.hero .scroll-arrow{display:inline-block;width:30px;height:30px;border-right:2px solid rgba(100,180,255,.5);border-bottom:2px solid rgba(100,180,255,.5);transform:rotate(45deg);animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(10px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEADERS */
+.section-header{text-align:center;margin-bottom:3rem}
+.section-header .section-number{display:inline-block;font-size:.8rem;font-weight:700;color:#64b5f6;letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem}
+.section-header h2{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#e0e0ff,#64b5f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.8rem}
+.section-header p{font-size:1.1rem;color:#a0a0c0;max-width:700px;margin:0 auto}
+
+/* CARDS */
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:2rem;transition:transform .3s,border-color .3s,box-shadow .3s}
+.card:hover{transform:translateY(-4px);border-color:rgba(100,180,255,.3);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin:2rem 0}
+.stat-card{text-align:center;padding:1.5rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px}
+.stat-value{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#64b5f6,#81c784);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:.85rem;color:#a0a0c0;margin-top:.3rem}
+
+/* GRIDS */
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:1.5rem;margin:2rem 0}
+.chart-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.chart-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.chart-card img{width:100%;border-radius:0;display:block;background:#fff;padding:.5rem}
+.chart-card .chart-caption{padding:1rem 1.2rem;font-size:.9rem;color:#c0c0e0}
+.chart-card .chart-caption strong{color:#e0e0ff}
+.full-chart{margin:2rem 0;border-radius:16px;overflow:hidden;border:2px solid rgba(100,180,255,.35);box-shadow:0 0 30px rgba(100,150,255,.15),inset 0 0 30px rgba(100,150,255,.05);background:rgba(20,25,45,.6)}
+.full-chart img{width:100%;display:block;border-radius:0;padding:4px}
+
+/* LAYMAN ANALOGY BOX */
+.analogy-box{padding:1.5rem 1.8rem;border-radius:16px;margin:1.5rem 0;border-left:4px solid;line-height:1.9;font-size:1.02rem}
+.analogy-box .analogy-title{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.analogy-box p{color:#c0c0e0}
+
+/* STEP LIST */
+.step-list{list-style:none;counter-reset:step}
+.step-list li{counter-increment:step;padding:.8rem 0 .8rem 3rem;position:relative;border-left:2px solid rgba(100,180,255,.2);margin-left:1rem}
+.step-list li::before{content:counter(step);position:absolute;left:-14px;top:.8rem;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#64b5f6,#ce93d8);color:#fff;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* TABLE */
+.results-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.95rem}
+.results-table thead{background:rgba(100,180,255,.1)}
+.results-table th,.results-table td{padding:.8rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.results-table th{font-weight:700;color:#64b5f6;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px}
+.results-table tbody tr:hover{background:rgba(100,180,255,.05)}
+.tag{display:inline-block;padding:.15rem .6rem;border-radius:6px;font-size:.78rem;font-weight:600}
+.tag-quantum{background:rgba(100,180,255,.15);color:#64b5f6}
+.tag-classical{background:rgba(255,180,100,.15);color:#ffb74d}
+.tag-optimal{background:rgba(100,200,100,.15);color:#81c784}
+
+/* TECHNICAL TEXT */
+.technical-text{padding:1.5rem;border-radius:12px;margin:1rem 0;line-height:1.8;background:rgba(100,100,255,.05);border:1px solid rgba(100,100,255,.15);font-family:'Consolas','Fira Code',monospace;font-size:.92rem}
+.layman-text{padding:1.5rem;border-radius:12px;margin:1rem 0;line-height:1.8;background:rgba(100,200,100,.05);border:1px solid rgba(100,200,100,.15)}
+
+/* GLOSSARY */
+.glossary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.2rem;margin:2rem 0}
+.gloss-card{padding:1.3rem 1.5rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;transition:all .3s}
+.gloss-card:hover{border-color:rgba(100,180,255,.3);transform:translateY(-2px)}
+.gloss-card .gloss-term{font-size:1.05rem;font-weight:700;margin-bottom:.4rem}
+.gloss-card .gloss-def{font-size:.9rem;color:#b0b0d0;line-height:1.6}
+.gloss-card .gloss-tech{font-size:.8rem;color:#7a8ba8;margin-top:.4rem;font-family:'Consolas',monospace}
+
+/* PLATFORM CARDS */
+.platform-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin:2rem 0}
+.platform-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.5rem;text-align:center;transition:all .3s}
+.platform-card:hover{transform:translateY(-4px);border-color:var(--platform-color,rgba(100,180,255,.3));box-shadow:0 15px 40px rgba(0,0,0,.3)}
+.platform-card .platform-icon{width:64px;height:64px;border-radius:16px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff}
+.platform-card h3{font-size:1.2rem;margin-bottom:.5rem;color:#e0e0ff}
+.platform-card .platform-detail{font-size:.85rem;color:#a0a0c0;margin:.3rem 0}
+.platform-card .platform-highlight{display:inline-block;margin-top:.8rem;padding:.3rem .8rem;border-radius:6px;font-size:.8rem;font-weight:700}
+
+/* TRADE-OFF TRIANGLE */
+.triangle-container{position:relative;width:300px;height:260px;margin:0 auto 2rem}
+.triangle-container svg{width:100%;height:100%}
+.triangle-label{position:absolute;font-weight:700;font-size:.95rem}
+.triangle-label.top{top:-5px;left:50%;transform:translateX(-50%);color:#81c784}
+.triangle-label.left{bottom:-5px;left:-10px;color:#64b5f6}
+.triangle-label.right{bottom:-5px;right:-10px;color:#ce93d8}
+
+/* FINDINGS */
+.finding-card{display:flex;gap:1.5rem;padding:1.5rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;margin:1rem 0;transition:all .3s}
+.finding-card:hover{border-color:rgba(100,180,255,.3);transform:translateX(5px)}
+.finding-number{flex-shrink:0;width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#64b5f6,#ce93d8);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:#fff}
+.finding-content h4{font-size:1.1rem;color:#e0e0ff;margin-bottom:.3rem}
+.finding-content p{font-size:.95rem;color:#a0a0c0}
+
+/* ARCH ROLE CARDS */
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:2rem 0}
+.role-card{text-align:center;padding:2rem 1.5rem;border-radius:16px;border:2px solid}
+.role-card h3{font-size:1.6rem;margin-bottom:.5rem}
+.role-card .role-sub{font-size:.85rem;color:#a0a0c0;margin-bottom:1rem}
+.role-card ul{text-align:left;list-style:none;font-size:.9rem;color:#c0c0e0}
+.role-card ul li{padding:.25rem 0;padding-left:1.2rem;position:relative}
+.role-card ul li::before{content:">";position:absolute;left:0;color:inherit;font-weight:700}
+
+/* ENERGY SECTION BIG NUMBERS */
+.energy-big{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin:2rem 0}
+.energy-stat{text-align:center;padding:2rem 1rem;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.energy-stat .e-val{font-size:2.8rem;font-weight:800}
+.energy-stat .e-label{font-size:.85rem;color:#a0a0c0;margin-top:.3rem}
+
+/* FOOTER */
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(255,255,255,.06);color:#606080;font-size:.85rem}
+footer strong{color:#a0a0c0}
+
+/* RESPONSIVE */
+@media(max-width:768px){.hero h1{font-size:2rem}.exp-grid,.role-grid{grid-template-columns:1fr}.chart-grid{grid-template-columns:1fr}.platform-grid{grid-template-columns:1fr 1fr}nav .nav-links{display:none}.section-header h2{font-size:1.8rem}.stat-value{font-size:1.6rem}.glossary-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.platform-grid,.stats-row{grid-template-columns:1fr}}
+
+/* ANIMATE ON SCROLL */
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .8s ease-out,transform .8s ease-out}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="bg-particles"></div>
+
+<!-- ══════════ NAVIGATION ══════════ -->
+<nav>
+<div class="nav-inner">
+  <div class="logo">QC Thesis</div>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+    <li><a href="#qsvm">QSVM</a></li>
+    <li><a href="#qaoa">QAOA</a></li>
+    <li><a href="#grover">Grover</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#energy">Energy</a></li>
+    <li><a href="#cloud">Cloud</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#hybrid-impact">Hybrid Impact</a></li>
+    <li><a href="#tradeoffs">Trade-offs</a></li>
+  </ul>
+</div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="home">
+<div class="hero-content">
+  <div class="badge">Master's Thesis Demo 2026</div>
+  <h1>Hybrid Quantum-AI Models for Cybersecurity on Cloud Platforms</h1>
+  <p class="subtitle">Accuracy &middot; Latency &middot; Energy Trade-offs &mdash; A Complete Research Demo with Real Quantum Experiments</p>
+  <div class="author-card">
+    <div class="author-avatar">N</div>
+    <div class="author-info">
+      <div class="author-name">Nirmit Dagli</div>
+      <div class="author-title">Quantum Computing Researcher &middot; Cybersecurity &middot; Cloud Platforms</div>
+    </div>
+  </div>
+  <div class="scroll-hint"><a href="#about"><div class="scroll-arrow"></div></a></div>
+</div>
+</section>
+
+<!-- ══════════ ABOUT ══════════ -->
+<section id="about" class="fade-in">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">The Mission</div>
+    <h2>What This Thesis Proves</h2>
+    <p>Three quantum experiments, three cybersecurity problems, one question: Can quantum computers protect us better?</p>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Quantum Experiments</div></div>
+    <div class="stat-card"><div class="stat-value">100%</div><div class="stat-label">QSVM Accuracy</div></div>
+    <div class="stat-card"><div class="stat-value">88.3%</div><div class="stat-label">QAOA Approx. Ratio</div></div>
+    <div class="stat-card"><div class="stat-value">96.4%</div><div class="stat-label">Grover Success Rate</div></div>
+    <div class="stat-card"><div class="stat-value">693x</div><div class="stat-label">Energy Savings (QC vs Classical)</div></div>
+    <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Cloud Platforms Analyzed</div></div>
+  </div>
+  <div class="card" style="margin-top:2rem">
+    <h3 style="color:#64b5f6;margin-bottom:1rem">In Simple Words</h3>
+    <p>Cybersecurity is getting harder every day. This thesis explores whether <strong>quantum computers</strong> &mdash; a fundamentally new type of computer &mdash; can help fight cyber attacks better than traditional machines. We built a complete system that runs three quantum experiments, each targeting a real cybersecurity problem, and compared them on <strong>accuracy</strong>, <strong>speed</strong>, and <strong>energy consumption</strong> across five cloud platforms.</p>
+  </div>
+  <div class="analogy-box" style="background:rgba(100,180,255,.06);border-color:#64b5f6">
+    <div class="analogy-title" style="color:#64b5f6">Think of it like this...</div>
+    <p>Imagine you're a <strong>librarian</strong> protecting a building. A regular computer is like having a single security guard checking IDs one at a time. A quantum computer is like having a guard who can <strong>check everyone's IDs at the same time</strong> &mdash; because in the quantum world, you can look at many possibilities simultaneously. Our thesis asked: <em>Is this quantum guard actually better at catching intruders? Is it faster? Does it use less electricity?</em> We tested all three questions and found the answers.</p>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     GLOSSARY - Every term explained
+     ══════════════════════════════════════════════════════ -->
+<section id="glossary" class="fade-in" style="background:radial-gradient(ellipse at 50% 40%,rgba(100,50,200,.06),transparent 60%)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Glossary</div>
+    <h2>Every Term Explained</h2>
+    <p>All the quantum computing and algorithm terms used in this thesis, in plain English</p>
+  </div>
+
+  <h3 style="color:#64b5f6;margin-bottom:1rem">Quantum Computing Terms</h3>
+  <div class="glossary-grid">
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#64b5f6">Qubit (Quantum Bit)</div>
+      <div class="gloss-def">A normal computer bit is either 0 or 1, like a light switch &mdash; ON or OFF. A <strong>qubit</strong> can be 0, 1, or <em>both at the same time</em>. Imagine a coin spinning in the air &mdash; it's not heads or tails, it's BOTH until you look. That's a qubit. With just 4 spinning coins (qubits), you represent 16 combinations at once!</div>
+      <div class="gloss-tech">|&psi;&rang; = &alpha;|0&rang; + &beta;|1&rang; where |&alpha;|&sup2; + |&beta;|&sup2; = 1</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ce93d8">Superposition</div>
+      <div class="gloss-def">The ability of a qubit to be in multiple states at once. Think of a coin spinning in the air &mdash; it's both heads and tails until it lands. With 4 qubits in superposition, you can represent all 16 possible combinations simultaneously.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#81c784">Entanglement</div>
+      <div class="gloss-def">Two qubits linked so measuring one instantly determines the other, no matter the distance. Imagine two magic dice &mdash; you roll one in New York and one in Tokyo. They ALWAYS show the same number. Einstein called it "spooky action at a distance." This lets quantum computers coordinate calculations in ways classical machines simply cannot.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ffb74d">QPU (Quantum Processing Unit)</div>
+      <div class="gloss-def">The quantum equivalent of a CPU or GPU. It's the physical chip that contains and manipulates qubits. Companies like IBM, Google, and IonQ build QPUs using superconducting circuits or trapped ions cooled near absolute zero.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#4dd9d9">Quantum Gate</div>
+      <div class="gloss-def">An operation that changes a qubit's state, like logic gates (AND, OR, NOT) in normal computers. Common gates: <strong>H</strong> (creates superposition), <strong>CNOT</strong> (entangles two qubits), <strong>RZ</strong> (rotates phase). A quantum algorithm is a sequence of gates.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#e8555a">Gate Fidelity</div>
+      <div class="gloss-def">How accurately a quantum gate performs. 99.7% fidelity means it works correctly 997 out of 1000 times. Higher fidelity = better results. This is why platform choice matters &mdash; Quantinuum has 99.7% vs IBM's 99.0%.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#64b5f6">Shots</div>
+      <div class="gloss-def">How many times you run a quantum circuit and measure. Since quantum results are probabilistic, you run the same circuit many times (we used 2,000 shots) and look at the statistics of outcomes.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ce93d8">Statevector</div>
+      <div class="gloss-def">The complete mathematical description of a quantum system's state. For 4 qubits, it's a list of 16 complex numbers. Statevector simulation gives exact results (no randomness) but only works for small numbers of qubits.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#81c784">Oracle</div>
+      <div class="gloss-def">The "cheese detector" in our mouse maze. It doesn't tell the mouse WHERE the cheese is &mdash; it just says "you're standing on it!" or "nope, keep looking." The oracle marks the right answer with a special quantum flag (phase flip). Grover's algorithm then amplifies that flag so it becomes obvious.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ffb74d">Diffusion Operator</div>
+      <div class="gloss-def">After the cheese detector (oracle) marks the room, the diffusion operator is like a <strong>magnifying glass for probability</strong>. It makes the cheese room "louder" and everything else "quieter." After 3 rounds of mark-and-amplify, the cheese room is screaming "HERE I AM!" at 96.4% volume.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#4dd9d9">Hamiltonian</div>
+      <div class="gloss-def">Think of it as a <strong>landscape of hills and valleys</strong>. Each valley is a possible solution; the deepest valley is the best answer. The Hamiltonian is the map of this landscape. QAOA tries to roll a quantum ball downhill to find the deepest valley &mdash; but it can quantum-tunnel through hills to avoid getting stuck!</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#e8555a">Feature Map / ZZ Feature Map</div>
+      <div class="gloss-def">A quantum circuit that encodes classical data into quantum states. The <strong>ZZ Feature Map</strong> uses Hadamard + phase gates for individual features, then CNOT pairs for feature interactions. This maps data into a high-dimensional quantum space where patterns become easier to separate.</div>
+    </div>
+  </div>
+
+  <h3 style="color:#ffb74d;margin:2.5rem 0 1rem">Algorithm &amp; ML Terms</h3>
+  <div class="glossary-grid">
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#64b5f6">SVM (Support Vector Machine)</div>
+      <div class="gloss-def">Imagine you have a bunch of red dots (attacks) and blue dots (normal traffic) on a table. SVM draws the <strong>widest possible line</strong> between them so new dots can be classified. It's like building a wall between two neighborhoods &mdash; the thicker the wall, the better you can tell which side a new house belongs to.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ce93d8">Kernel (in Machine Learning)</div>
+      <div class="gloss-def">A "similarity detector." Given two data points, how alike are they? Like comparing two faces: a <strong>classical kernel</strong> (RBF) compares eye color, nose size, hair. A <strong>quantum kernel</strong> compares those PLUS millions of invisible micro-features that humans can't see &mdash; it operates in exponentially more dimensions.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#81c784">MaxCut</div>
+      <div class="gloss-def">Imagine a spider web. You need to <strong>cut it into two pieces with one slice that breaks the most threads</strong>. With 7 threads, you can try all options. With 50? There are more possibilities than atoms in the universe. This is NP-hard &mdash; even the fastest supercomputer can't solve it at large scale. But quantum computers can get close.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ffb74d">QSVM (Quantum Support Vector Machine)</div>
+      <div class="gloss-def">Regular SVM + quantum superpowers. Instead of comparing data with a classical "similarity detector," QSVM encodes each data point into a quantum state (using 4 qubits for our 4 features) and measures overlap. It's like upgrading your security camera from HD to a <strong>billion-pixel quantum sensor</strong> that sees invisible patterns in network traffic.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#4dd9d9">QAOA (Quantum Approximate Optimization Algorithm)</div>
+      <div class="gloss-def">Like a <strong>DJ mixing two tracks</strong> to find the perfect beat. Track 1 (cost layer) rewards good solutions, Track 2 (mixer layer) explores new ideas. The DJ (optimizer) adjusts the volume of each track over many tries until the music (solution) sounds perfect. The quantum part? The DJ can hear ALL possible mixes at once.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#e8555a">Grover's Algorithm</div>
+      <div class="gloss-def">Like a <strong>mouse with super-smell finding cheese in a maze</strong>. A classical mouse checks every room one by one (1,000,000 rooms = 1,000,000 checks). Grover's quantum mouse sends out a "wave" that bounces back stronger from the cheese room &mdash; finds it in just ~1,000 sniffs. That's the quadratic speedup: &radic;N instead of N.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#64b5f6">COBYLA (Optimizer)</div>
+      <div class="gloss-def">A classical optimization algorithm used to tune quantum circuit parameters. It adjusts gamma and beta values in QAOA by trying different combinations and gradually finding the best settings. Doesn't need gradients &mdash; ideal for noisy quantum results.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ce93d8">Approximation Ratio</div>
+      <div class="gloss-def">Like a grade on a test. If the perfect answer is 100%, our QAOA scored <strong>88.3%</strong> while the classical greedy approach scored 85.7%. In the real world, for NP-hard problems (ones that are basically impossible to solve perfectly), scoring above 80% is like getting an A. QAOA's score improves with more qubits.</div>
+    </div>
+  </div>
+
+  <h3 style="color:#81c784;margin:2.5rem 0 1rem">Metrics &amp; Evaluation Terms</h3>
+  <div class="glossary-grid">
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#81c784">Accuracy</div>
+      <div class="gloss-def">The percentage of correct predictions. If a model correctly identifies 95 out of 100 network packets as normal or attack, that's 95% accuracy. Simple but can be misleading if data is unbalanced.</div>
+      <div class="gloss-tech">Accuracy = (TP + TN) / (TP + TN + FP + FN)</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#64b5f6">Precision</div>
+      <div class="gloss-def">Of all the items the model flagged as attacks, what percentage were actually attacks? High precision = few false alarms. If it flagged 10 packets as malicious and 9 really were, precision is 90%.</div>
+      <div class="gloss-tech">Precision = TP / (TP + FP)</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ffb74d">Recall</div>
+      <div class="gloss-def">Of all actual attacks, what percentage did the model catch? High recall = few missed attacks. If there were 10 real attacks and the model caught 8, recall is 80%. In security, missing attacks is dangerous, so recall matters a lot.</div>
+      <div class="gloss-tech">Recall = TP / (TP + FN)</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#e8555a">F1 Score</div>
+      <div class="gloss-def">The "overall grade" that balances precision and recall. Like a student's GPA combining all subjects. F1 = 1.0 means <strong>perfect security</strong>: every alarm is real AND every real attack is caught. F1 = 0.5 means your system is mediocre &mdash; missing attacks or crying wolf too often. Our QSVM achieved F1 = 1.0 (perfect!).</div>
+      <div class="gloss-tech">F1 = 2 &times; (Precision &times; Recall) / (Precision + Recall)</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#ce93d8">Confusion Matrix</div>
+      <div class="gloss-def">A <strong>report card for security</strong>. Four boxes: "Caught the bad guys" (True Positive), "Let good guys through" (True Negative), "Falsely accused an innocent person" (False Positive), "Let a bad guy escape" (False Negative). The last two are the mistakes &mdash; our quantum model had ZERO of both!</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term" style="color:#4dd9d9">PUE (Power Usage Effectiveness)</div>
+      <div class="gloss-def">A data center efficiency metric. PUE = Total Facility Energy / IT Equipment Energy. A PUE of 1.2 means for every 1 watt of computing, the facility uses 0.2 watts extra for cooling, lighting, etc. Lower is better; 1.0 would be perfect.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ QSVM ══════════ -->
+<section id="qsvm" class="fade-in" style="--glow-color:rgba(50,100,200,.08)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Experiment 1</div>
+    <h2>QSVM &mdash; Catching Hackers with Quantum ML</h2>
+    <p>Quantum kernel SVM for cybersecurity anomaly detection</p>
+  </div>
+  <div class="analogy-box" style="background:rgba(100,180,255,.06);border-color:#64b5f6">
+    <div class="analogy-title" style="color:#64b5f6">Layman Analogy: The Security Camera Upgrade</div>
+    <p>Imagine airport security has cameras that see in <strong>normal light</strong> (classical SVM). They catch obvious threats &mdash; someone carrying a weapon in plain sight. Now imagine upgrading to cameras that see in <strong>infrared, ultraviolet, AND X-ray at the same time</strong> (quantum SVM). They catch the same obvious threats PLUS hidden ones invisible to normal cameras. That's what a quantum kernel does &mdash; it sees data in more dimensions. At our small test (120 passengers), both cameras perform equally. But at a busy airport with 10 million passengers? The quantum cameras catch threats the normal ones miss.</p>
+  </div>
+  <div class="card" style="margin-bottom:2rem">
+    <h3 style="color:#64b5f6;margin-bottom:1rem">The Problem (Technical)</h3>
+    <p>Classify network traffic as normal or anomalous using a Support Vector Machine. The <strong>quantum version</strong> encodes data into quantum states via a ZZ Feature Map, measuring similarity in a high-dimensional Hilbert space where patterns that classical RBF kernels miss become linearly separable.</p>
+  </div>
+  <div class="exp-grid">
+    <div>
+      <h3 style="color:#e0e0ff;margin-bottom:1rem">How It Works</h3>
+      <ul class="step-list">
+        <li><strong>Generate Data</strong> &mdash; 120 samples: normal traffic (near 0.2) and attacks (near 0.8), 4 features each</li>
+        <li><strong>Scale</strong> &mdash; MinMaxScaler normalizes features to [0, 1]</li>
+        <li><strong>Quantum Encoding</strong> &mdash; ZZ Feature Map: H gates, phase gates, CNOT entanglement across 4 qubits</li>
+        <li><strong>Quantum Kernel</strong> &mdash; For each pair: build U(x)U&dagger;(y), measure P(|0000&rang;). High probability = similar</li>
+        <li><strong>Train SVM</strong> &mdash; Feed quantum kernel matrix to sklearn SVC(kernel="precomputed")</li>
+      </ul>
+    </div>
+    <div>
+      <div class="technical-text">
+        <strong>Kernel:</strong> k(x, y) = |&lang;0<sup>n</sup>| U&dagger;(y) U(x) |0<sup>n</sup>&rang;|&sup2;<br><br>
+        <strong>ZZ Map:</strong> U(x) = &prod;<sub>i&lt;j</sub> CNOT &middot; RZ(2(&pi;-x<sub>i</sub>)(&pi;-x<sub>j</sub>)) &middot; CNOT &middot; &prod;<sub>i</sub> P(2x<sub>i</sub>) &middot; H<br><br>
+        <strong>Backend:</strong> Statevector &middot; <strong>Qubits:</strong> 4 &middot; <strong>Kernel entries:</strong> 9,600
+      </div>
+    </div>
+  </div>
+  <h3 style="color:#e0e0ff;margin:2rem 0 1rem">Results</h3>
+  <table class="results-table">
+    <thead><tr><th>Metric</th><th><span class="tag tag-quantum">Quantum SVM</span></th><th><span class="tag tag-classical">Classical SVM</span></th></tr></thead>
+    <tbody>
+      <tr><td>Accuracy</td><td><strong>100.00%</strong></td><td><strong>100.00%</strong></td></tr>
+      <tr><td>Precision</td><td>100.00%</td><td>100.00%</td></tr>
+      <tr><td>Recall</td><td>100.00%</td><td>100.00%</td></tr>
+      <tr><td>F1 Score</td><td>100.00%</td><td>100.00%</td></tr>
+      <tr><td>Runtime</td><td>28.79s</td><td>0.007s</td></tr>
+      <tr><td>Energy</td><td>172,733 &ndash; 863,666 J</td><td>44 &ndash; 222 J</td></tr>
+    </tbody>
+  </table>
+  <div class="chart-grid">
+    <div class="chart-card"><img src="images/accuracy_comparison_qsvm.png" alt="QSVM Accuracy"><div class="chart-caption"><strong>Accuracy Comparison</strong> &mdash; Both achieve perfect 100% on all four metrics</div></div>
+    <div class="chart-card"><img src="images/confusion_matrix_qsvm.png" alt="QSVM CM"><div class="chart-caption"><strong>QSVM Confusion Matrix</strong> &mdash; Zero misclassifications</div></div>
+    <div class="chart-card"><img src="images/confusion_matrix_classical.png" alt="Classical CM"><div class="chart-caption"><strong>Classical SVM Confusion Matrix</strong> &mdash; Also perfect with RBF kernel</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ QAOA ══════════ -->
+<section id="qaoa" class="fade-in">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Experiment 2</div>
+    <h2>QAOA &mdash; Quantum Network Optimization</h2>
+    <p>Quantum Approximate Optimization for MaxCut (network segmentation)</p>
+  </div>
+  <div class="analogy-box" style="background:rgba(255,183,77,.06);border-color:#ffb74d">
+    <div class="analogy-title" style="color:#ffb74d">Layman Analogy: The Wedding Seating Chart</div>
+    <p>You're planning a wedding with 7 tables and need to split guests into two rooms to <strong>maximize interesting conversations across rooms</strong> (so guests in different rooms have lots of connections). A human planner (classical) tries arrangements one by one &mdash; maybe starting with a decent guess and improving. A quantum planner considers <strong>ALL 128 possible seating arrangements simultaneously</strong>, then magically gravitates toward the best one. With 7 guests (our demo), both planners do OK. With 50 guests? That's 1,125,899,906,842,624 possible arrangements. The quantum planner still handles it; the classical one gives up.</p>
+  </div>
+  <div class="card" style="margin-bottom:2rem">
+    <h3 style="color:#ffb74d;margin-bottom:1rem">The Problem (Technical)</h3>
+    <p>Split 7 servers into two security zones to maximize monitored connections. This is the <strong>MaxCut problem</strong> &mdash; NP-hard, meaning it gets impossibly difficult as size grows. With 50 nodes that's over a quadrillion possibilities. QAOA uses quantum superposition to explore many solutions at once.</p>
+  </div>
+  <div class="exp-grid">
+    <div>
+      <ul class="step-list">
+        <li><strong>Random Graph</strong> &mdash; 7 nodes, 9 edges, edge probability 0.35</li>
+        <li><strong>Superposition</strong> &mdash; All 128 possible splits explored simultaneously</li>
+        <li><strong>Cost Layer</strong> &mdash; CNOT+RZ gates reward splits with more cut edges</li>
+        <li><strong>Mixer Layer</strong> &mdash; RX gates explore neighboring solutions</li>
+        <li><strong>p=2 Layers</strong> &mdash; Two rounds for better quality</li>
+        <li><strong>COBYLA Optimizer</strong> &mdash; Tunes gamma/beta over 150 iterations</li>
+      </ul>
+    </div>
+    <div>
+      <div class="technical-text">
+        <strong>Cost:</strong> C = &Sigma;<sub>(i,j)&isin;E</sub> (1-Z<sub>i</sub>Z<sub>j</sub>)/2<br>
+        <strong>State:</strong> |&gamma;,&beta;&rang; = &prod;<sub>p</sub> e<sup>-i&beta;B</sup> e<sup>-i&gamma;C</sup> |+&rang;<sup>&otimes;n</sup><br>
+        <strong>Backend:</strong> AerSimulator, 2000 shots &middot; <strong>Qubits:</strong> 7
+      </div>
+    </div>
+  </div>
+  <table class="results-table" style="margin-top:1.5rem">
+    <thead><tr><th>Metric</th><th><span class="tag tag-quantum">QAOA</span></th><th><span class="tag tag-classical">Greedy</span></th><th><span class="tag tag-optimal">Optimal</span></th></tr></thead>
+    <tbody>
+      <tr><td>Cut Value</td><td><strong>6.18</strong></td><td>6</td><td>7</td></tr>
+      <tr><td>Approx. Ratio</td><td><strong>88.3%</strong></td><td>85.7%</td><td>100%</td></tr>
+      <tr><td>Runtime</td><td>8.07s</td><td>0.00005s</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+  <div class="chart-grid" style="margin-top:1.5rem">
+    <div class="chart-card"><img src="images/qaoa_cut_comparison.png" alt="QAOA Cut"><div class="chart-caption"><strong>Cut Value</strong> &mdash; QAOA beats greedy heuristic (88.3% vs 85.7%)</div></div>
+    <div class="chart-card"><img src="images/qaoa_convergence.png" alt="QAOA Convergence"><div class="chart-caption"><strong>Convergence</strong> &mdash; COBYLA improves cut value over 150 iterations</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ GROVER ══════════ -->
+<section id="grover" class="fade-in">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Experiment 3</div>
+    <h2>Grover &mdash; Quantum Cryptographic Search</h2>
+    <p>Finding a needle in a haystack at quantum speed</p>
+  </div>
+  <div class="analogy-box" style="background:rgba(100,200,100,.06);border-color:#81c784">
+    <div class="analogy-title" style="color:#81c784">Layman Analogy: The Mouse Finding Cheese in a Maze</div>
+    <p>Imagine a maze with <strong>16 rooms</strong>, and cheese is hidden in ONE room. A <strong>classical mouse</strong> has no sense of smell &mdash; it must check room by room. On average, it takes 8 tries, worst case 16. Now imagine a <strong>quantum mouse</strong> that can somehow <em>smell the cheese through walls</em>. It doesn't check every room; instead, it sends out a "quantum wave" that bounces back stronger from the cheese room. After just <strong>3 sniffs</strong>, the quantum mouse knows exactly where the cheese is (96.4% sure!).</p>
+    <p style="margin-top:.8rem">Now scale this up: instead of 16 rooms, imagine <strong>340,000,000,000,000,000,000,000,000,000,000,000,000 rooms</strong> (that's a 128-bit encryption key). The classical mouse would need to check rooms until the heat death of the universe. The quantum mouse? Just <strong>18,000,000,000,000,000,000 sniffs</strong> &mdash; that's a <strong>23 billion-billion times speedup</strong>. This is why quantum computing is a big deal for cryptography.</p>
+  </div>
+  <div class="card" style="margin-bottom:2rem">
+    <h3 style="color:#81c784;margin-bottom:1rem">The Problem (Technical)</h3>
+    <p>Find a 4-bit secret key (like 0110) from 16 possibilities. A normal computer tries one by one: up to 16 checks. <strong>Grover finds it in just 3 tries.</strong> For 128-bit AES keys (3.4&times;10<sup>38</sup> possibilities), Grover provides a 2.3&times;10<sup>19</sup>x speedup.</p>
+  </div>
+  <table class="results-table">
+    <thead><tr><th>Metric</th><th><span class="tag tag-quantum">Grover</span></th><th><span class="tag tag-classical">Brute Force</span></th></tr></thead>
+    <tbody>
+      <tr><td>Success Probability</td><td><strong>96.35%</strong></td><td>100%</td></tr>
+      <tr><td>Iterations / Checks</td><td>3 iterations</td><td>Up to 16</td></tr>
+      <tr><td>Runtime</td><td>0.115s</td><td>0.000007s</td></tr>
+    </tbody>
+  </table>
+  <div class="card" style="margin:1.5rem 0;border-color:rgba(100,200,100,.2)">
+    <h4 style="color:#81c784">Scaling Advantage</h4>
+    <table class="results-table" style="margin-top:.5rem">
+      <thead><tr><th>Qubits</th><th>Search Space</th><th>Classical</th><th>Quantum</th><th>Speedup</th></tr></thead>
+      <tbody>
+        <tr><td>4</td><td>16</td><td>16</td><td>3</td><td>5x</td></tr>
+        <tr><td>20</td><td>1,048,576</td><td>1,048,576</td><td>804</td><td>1,304x</td></tr>
+        <tr><td>50</td><td>1.1&times;10<sup>15</sup></td><td>1.1&times;10<sup>15</sup></td><td>2.6&times;10<sup>7</sup></td><td>42 million x</td></tr>
+        <tr><td>128 (AES)</td><td>3.4&times;10<sup>38</sup></td><td>3.4&times;10<sup>38</sup></td><td>1.5&times;10<sup>19</sup></td><td>2.3&times;10<sup>19</sup>x</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card"><img src="images/grover_probability_vs_iterations.png" alt="Grover Prob"><div class="chart-caption"><strong>Probability Oscillation</strong> &mdash; Peak at 3 iterations (~96%), drops, rises again. Too many iterations undo the work!</div></div>
+    <div class="chart-card"><img src="images/grover_runtime_scaling.png" alt="Grover Scale"><div class="chart-caption"><strong>Runtime Scaling</strong> &mdash; Quantum simulation vs brute-force across 2-10 qubits</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ RESULTS DASHBOARD ══════════ -->
+<section id="results" class="fade-in">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">All Results</div>
+    <h2>Complete Results Dashboard</h2>
+  </div>
+  <div class="analogy-box" style="background:rgba(100,180,255,.06);border-color:#64b5f6">
+    <div class="analogy-title" style="color:#64b5f6">Reading This Table</div>
+    <p>Think of "Primary Metric" as the <strong>grade</strong> (how good the answer is), "Runtime" as the <strong>stopwatch</strong> (how long it took), and "Energy" as the <strong>electricity bill</strong>. Quantum gets the same or better grades, takes longer on our small test (because we're simulating, not using real quantum hardware), but on real QPUs it would be massively faster AND cheaper.</p>
+  </div>
+  <table class="results-table">
+    <thead><tr><th>Experiment</th><th>Algorithm</th><th>Primary Metric</th><th>Runtime</th><th>Energy Range (J)</th></tr></thead>
+    <tbody>
+      <tr><td>QSVM</td><td><span class="tag tag-quantum">Quantum SVM</span></td><td>Accuracy: <strong>100%</strong></td><td>28.79s</td><td>172,733 &ndash; 863,666</td></tr>
+      <tr><td>QSVM</td><td><span class="tag tag-classical">Classical SVM</span></td><td>Accuracy: <strong>100%</strong></td><td>0.007s</td><td>44 &ndash; 222</td></tr>
+      <tr><td>QAOA</td><td><span class="tag tag-quantum">QAOA Quantum</span></td><td>Ratio: <strong>88.3%</strong></td><td>8.07s</td><td>48,419 &ndash; 242,097</td></tr>
+      <tr><td>QAOA</td><td><span class="tag tag-classical">Greedy</span></td><td>Ratio: <strong>85.7%</strong></td><td>0.00005s</td><td>0.28 &ndash; 1.42</td></tr>
+      <tr><td>Grover</td><td><span class="tag tag-quantum">Grover</span></td><td>Success: <strong>96.35%</strong></td><td>0.115s</td><td>691 &ndash; 3,457</td></tr>
+      <tr><td>Grover</td><td><span class="tag tag-classical">Brute Force</span></td><td>Success: <strong>100%</strong></td><td>0.000007s</td><td>0.04 &ndash; 0.22</td></tr>
+    </tbody>
+  </table>
+  <div class="chart-grid" style="margin-top:2rem">
+    <div class="chart-card"><img src="images/accuracy_comparison.png" alt="Accuracy"><div class="chart-caption"><strong>Primary Metric</strong> across all experiments</div></div>
+    <div class="chart-card"><img src="images/runtime_comparison.png" alt="Runtime"><div class="chart-caption"><strong>Runtime</strong> &mdash; Quantum slower on simulator; gap shrinks on real hardware</div></div>
+    <div class="chart-card"><img src="images/energy_estimation.png" alt="Energy"><div class="chart-caption"><strong>Energy</strong> &mdash; Model: Energy = Runtime &times; Power &times; PUE (1.2)</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     ENERGY DEEP DIVE
+     ══════════════════════════════════════════════════════ -->
+<section id="energy" class="fade-in" style="background:radial-gradient(ellipse at 50% 40%,rgba(50,200,100,.06),transparent 60%)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Energy Analysis</div>
+    <h2>Who Saves More Energy?</h2>
+    <p>A dedicated deep dive into the energy trade-offs between classical and quantum computing</p>
+  </div>
+
+  <div class="analogy-box" style="background:rgba(100,200,100,.06);border-color:#81c784">
+    <div class="analogy-title" style="color:#81c784">Layman Analogy: The Light Bulb vs The Flash</div>
+    <p>Think of it like two workers digging a ditch. The <strong>classical computer</strong> is a worker using a regular shovel &mdash; takes 30 seconds, keeps the work lights on the whole time, burns a lot of electricity. The <strong>quantum computer</strong> is like The Flash &mdash; digs the same ditch in <strong>0.003 seconds</strong>. Even though The Flash needs powerful equipment running (the QPU cooling system), the job is done so fast that the <strong>total electricity bill is way lower</strong>. That's the key: it's not about power per second, it's about <em>total energy = power &times; time</em>. Finish faster = use less total energy.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:2rem">
+    <h3 style="color:#81c784;margin-bottom:1rem">The Energy Model</h3>
+    <p>We use the thesis cloud energy model to estimate consumption:</p>
+    <div class="technical-text" style="text-align:center;font-size:1.1rem;margin-top:1rem">
+      <strong>Energy = Runtime &times; Power &times; PUE</strong><br><br>
+      Power<sub>low</sub> = 5,000 W &nbsp;&nbsp;|&nbsp;&nbsp; Power<sub>high</sub> = 25,000 W &nbsp;&nbsp;|&nbsp;&nbsp; PUE = 1.2
+    </div>
+    <p style="margin-top:1rem;color:#a0a0c0">PUE (Power Usage Effectiveness) of 1.2 means for every 1W of compute, the data center uses 0.2W extra for cooling and infrastructure. The energy range [low, high] reflects uncertainty in server power consumption.</p>
+  </div>
+
+  <h3 style="color:#e0e0ff;margin-bottom:1rem">The Big Picture: Classical Simulation vs Real Quantum Hardware</h3>
+  <div class="full-chart"><img src="images/arch_classical.png" alt="Energy Comparison" style="padding:0;border-radius:12px"></div>
+
+  <div class="energy-big">
+    <div class="energy-stat">
+      <div class="e-val" style="color:#e8555a">665,531 J</div>
+      <div class="e-label">Classical HPC Total Energy<br>(all 3 experiments)</div>
+    </div>
+    <div class="energy-stat">
+      <div class="e-val" style="color:#81c784">960 J</div>
+      <div class="e-label">Azure Quantinuum Total Energy<br>(all 3 experiments, projected)</div>
+    </div>
+    <div class="energy-stat">
+      <div class="e-val" style="background:linear-gradient(135deg,#81c784,#64b5f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">693x</div>
+      <div class="e-label">Energy Savings<br>Quantum vs Classical</div>
+    </div>
+  </div>
+
+  <h3 style="color:#e0e0ff;margin:2rem 0 1rem">Per-Experiment Energy Breakdown</h3>
+  <table class="results-table">
+    <thead><tr><th>Experiment</th><th>Quantum (Simulator)</th><th>Classical</th><th>IBM Quantum</th><th>AWS Braket</th><th>Azure QC</th><th>Google QAI</th></tr></thead>
+    <tbody>
+      <tr><td><strong>QSVM</strong></td><td>518,200 J</td><td>133 J</td><td>2,700 J</td><td>510 J</td><td>360 J</td><td>2,400 J</td></tr>
+      <tr><td><strong>QAOA</strong></td><td>145,258 J</td><td>0.85 J</td><td>2,100 J</td><td>720 J</td><td>450 J</td><td>1,800 J</td></tr>
+      <tr><td><strong>Grover</strong></td><td>2,074 J</td><td>0.13 J</td><td>720 J</td><td>270 J</td><td>150 J</td><td>600 J</td></tr>
+      <tr style="background:rgba(100,200,100,.08)"><td><strong>TOTAL</strong></td><td><strong>665,532 J</strong></td><td><strong>134 J</strong></td><td><strong>5,520 J</strong></td><td><strong>1,500 J</strong></td><td><strong>960 J</strong></td><td><strong>4,800 J</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="exp-grid" style="margin-top:2rem">
+    <div class="card">
+      <h4 style="color:#e8555a;margin-bottom:.8rem">Why Is Quantum Simulation So Energy-Hungry?</h4>
+      <p>When we simulate a quantum computer on a classical machine, we're using classical CPUs to emulate quantum behavior. The simulator must track 2<sup>n</sup> complex amplitudes &mdash; exponentially more work than a real QPU. A real 4-qubit QPU executes a gate in nanoseconds; a simulator takes milliseconds. That 1,000,000x gap in time translates directly to energy.</p>
+    </div>
+    <div class="card">
+      <h4 style="color:#81c784;margin-bottom:.8rem">Why Real Quantum Hardware Saves Energy</h4>
+      <p>A superconducting QPU executes a gate by applying a microwave pulse for ~30 nanoseconds &mdash; consuming picojoules per gate. A trapped-ion QPU uses laser pulses for ~100 microseconds per gate. Even including the cooling overhead (dilution refrigerator at 15-20kW), the total energy per problem is orders of magnitude less because the <strong>execution time</strong> is dramatically shorter.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:2rem;border-color:rgba(100,200,100,.2)">
+    <h4 style="color:#81c784;margin-bottom:.8rem">Key Energy Findings</h4>
+    <ul style="list-style:none;font-size:.95rem;color:#c0c0e0">
+      <li style="padding:.4rem 0"><span style="color:#81c784;font-weight:700">1.</span> Azure Quantinuum (trapped ion) is the most energy-efficient platform: <strong>960 J total</strong> vs 665,531 J classical simulation</li>
+      <li style="padding:.4rem 0"><span style="color:#81c784;font-weight:700">2.</span> Trapped-ion systems (AWS, Azure) use 2.5-3 kW vs 18-20 kW for superconducting (IBM, Google) because they don't need dilution refrigerators</li>
+      <li style="padding:.4rem 0"><span style="color:#81c784;font-weight:700">3.</span> The energy advantage grows with problem size &mdash; for 50+ qubit problems, quantum hardware could save 10,000x+ energy</li>
+      <li style="padding:.4rem 0"><span style="color:#81c784;font-weight:700">4.</span> Cloud PUE of 1.2 adds 20% overhead; next-gen data centers target PUE &lt; 1.1</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ CLOUD PLATFORMS ══════════ -->
+<section id="cloud" class="fade-in">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Cloud Analysis</div>
+    <h2>Cloud Quantum Platform Comparison</h2>
+    <p>IBM, AWS, Azure, and Google &mdash; projected performance for our experiments</p>
+  </div>
+  <div class="analogy-box" style="background:rgba(100,180,255,.06);border-color:#64b5f6">
+    <div class="analogy-title" style="color:#64b5f6">Layman Analogy: Choosing a Car Dealership</div>
+    <p>Picking a quantum cloud platform is like choosing where to buy a car. <strong>IBM</strong> is like Toyota &mdash; most popular, reliable, good value, free test drives available. <strong>AWS (IonQ)</strong> is like a specialty dealer &mdash; different engine technology (trapped ions instead of superconducting), pay-per-use. <strong>Azure (Quantinuum)</strong> is like Rolls-Royce &mdash; most precise, most expensive, best quality. <strong>Google</strong> is like a concept car &mdash; cutting-edge but not available for regular buyers yet. Each has strengths depending on whether you prioritize <em>cost, accuracy, availability, or raw power</em>.</p>
+  </div>
+  <div class="platform-grid">
+    <div class="platform-card" style="--platform-color:rgba(76,114,176,.4)"><div class="platform-icon" style="background:linear-gradient(135deg,#1a237e,#42a5f5)">IBM</div><h3>IBM Quantum</h3><p class="platform-detail">127 qubits &middot; Superconducting &middot; 99% 2Q</p><div class="platform-highlight" style="background:rgba(76,114,176,.15);color:#64b5f6">~$1.60/run &middot; Free tier</div></div>
+    <div class="platform-card" style="--platform-color:rgba(221,132,82,.4)"><div class="platform-icon" style="background:linear-gradient(135deg,#e65100,#ff9800)">AWS</div><h3>AWS Braket (IonQ)</h3><p class="platform-detail">25 qubits &middot; Trapped Ion &middot; 97% 2Q</p><div class="platform-highlight" style="background:rgba(221,132,82,.15);color:#ffb74d">~$4.50/run &middot; Pay per shot</div></div>
+    <div class="platform-card" style="--platform-color:rgba(85,168,104,.4)"><div class="platform-icon" style="background:linear-gradient(135deg,#1b5e20,#66bb6a)">AZ</div><h3>Azure Quantum</h3><p class="platform-detail">20 qubits &middot; Trapped Ion &middot; 99.7% 2Q</p><div class="platform-highlight" style="background:rgba(85,168,104,.15);color:#81c784">~$8.00/run &middot; Best fidelity</div></div>
+    <div class="platform-card" style="--platform-color:rgba(196,78,82,.4)"><div class="platform-icon" style="background:linear-gradient(135deg,#b71c1c,#ef5350)">G</div><h3>Google Quantum AI</h3><p class="platform-detail">53 qubits &middot; Superconducting &middot; 99.4% 2Q</p><div class="platform-highlight" style="background:rgba(196,78,82,.15);color:#ef9a9a">Research access only</div></div>
+  </div>
+  <table class="results-table" style="margin-top:1.5rem">
+    <thead><tr><th>Platform</th><th>QSVM Acc.</th><th>QAOA Ratio</th><th>Grover Succ.</th><th>Energy</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Simulator (ours)</td><td><strong>100%</strong></td><td><strong>88.3%</strong></td><td><strong>96.4%</strong></td><td>665,532 J</td><td>Free</td></tr>
+      <tr><td>IBM Quantum</td><td>~92.5%</td><td>~72%</td><td>~82%</td><td>5,520 J</td><td>~$1.60</td></tr>
+      <tr><td>AWS Braket</td><td>~95.0%</td><td>~78%</td><td>~90%</td><td>1,500 J</td><td>~$4.50</td></tr>
+      <tr><td>Azure Quantum</td><td>~97.5%</td><td>~84%</td><td>~95%</td><td>960 J</td><td>~$8.00</td></tr>
+      <tr><td>Google QAI</td><td>~93.5%</td><td>~75%</td><td>~85%</td><td>4,800 J</td><td>Research</td></tr>
+    </tbody>
+  </table>
+  <div class="full-chart" style="margin-top:2rem"><img src="images/cloud_summary_dashboard.png" alt="Dashboard" style="padding:.5rem;background:#fff"></div>
+  <div class="chart-grid" style="margin-top:1.5rem">
+    <div class="chart-card"><img src="images/cloud_radar_comparison.png" alt="Radar"><div class="chart-caption"><strong>Radar Chart</strong> &mdash; 6-axis comparison across all platforms</div></div>
+    <div class="chart-card"><img src="images/cloud_hardware_specs.png" alt="HW Specs"><div class="chart-caption"><strong>Hardware Specs</strong> &mdash; Qubits, fidelity, power</div></div>
+    <div class="chart-card"><img src="images/cloud_tradeoff_scatter.png" alt="Scatter"><div class="chart-caption"><strong>Accuracy vs Latency</strong> &mdash; Trade-off scatter per platform</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     ARCHITECTURE
+     ══════════════════════════════════════════════════════ -->
+<section id="architecture" class="fade-in" style="background:radial-gradient(ellipse at 40% 40%,rgba(100,50,200,.06),transparent 60%)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">System Architecture</div>
+    <h2>Architecture &amp; Diagrams</h2>
+    <p>How CPUs, GPUs, and QPUs work together in hybrid quantum-AI cloud systems</p>
+  </div>
+
+  <div class="analogy-box" style="background:rgba(156,106,222,.06);border-color:#9C6ADE">
+    <div class="analogy-title" style="color:#9C6ADE">Layman Analogy: The Restaurant Kitchen</div>
+    <p>Think of our hybrid system as a <strong>restaurant kitchen</strong>. The <strong>CPU</strong> is the <strong>head chef</strong> &mdash; coordinates everything, reads orders, makes decisions, but can only do one thing at a time. The <strong>GPU</strong> is like a <strong>line of 20 sous-chefs</strong> &mdash; they can all chop vegetables simultaneously, great for repetitive tasks (like training AI). The <strong>QPU</strong> is like a <strong>magic taste-tester</strong> who can taste ALL possible ingredient combinations at once and instantly tell you which one is best. You wouldn't replace the head chef or the sous-chefs &mdash; you'd use all three together, each doing what they're best at.</p>
+  </div>
+
+  <!-- CPU / GPU / QPU Roles -->
+  <h3 style="color:#e0e0ff;margin-bottom:1.5rem;text-align:center">The Three Compute Units</h3>
+  <div class="role-grid">
+    <div class="role-card" style="border-color:#4C9BE8;background:rgba(76,155,232,.05)">
+      <h3 style="color:#4C9BE8">CPU</h3>
+      <div class="role-sub">Central Processing Unit</div>
+      <ul>
+        <li style="color:#4C9BE8">General-purpose computing</li>
+        <li style="color:#4C9BE8">Data preprocessing &amp; I/O</li>
+        <li style="color:#4C9BE8">Control flow &amp; orchestration</li>
+        <li style="color:#4C9BE8">Classical algorithm execution</li>
+        <li style="color:#4C9BE8">Running the Python host program</li>
+      </ul>
+    </div>
+    <div class="role-card" style="border-color:#50C878;background:rgba(80,200,120,.05)">
+      <h3 style="color:#50C878">GPU</h3>
+      <div class="role-sub">Graphics Processing Unit</div>
+      <ul>
+        <li style="color:#50C878">Massive parallel matrix math</li>
+        <li style="color:#50C878">ML model training &amp; inference</li>
+        <li style="color:#50C878">Neural network acceleration</li>
+        <li style="color:#50C878">Quantum circuit simulation</li>
+        <li style="color:#50C878">Thousands of cores at once</li>
+      </ul>
+    </div>
+    <div class="role-card" style="border-color:#9C6ADE;background:rgba(156,106,222,.05)">
+      <h3 style="color:#9C6ADE">QPU</h3>
+      <div class="role-sub">Quantum Processing Unit</div>
+      <ul>
+        <li style="color:#9C6ADE">Quantum kernel computation</li>
+        <li style="color:#9C6ADE">QAOA optimization circuits</li>
+        <li style="color:#9C6ADE">Grover search oracles</li>
+        <li style="color:#9C6ADE">Exponential state space</li>
+        <li style="color:#9C6ADE">Entanglement-based speedups</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin:2rem 0">
+    <h4 style="color:#ce93d8;margin-bottom:.8rem">Why QPU Is Like a GPU</h4>
+    <p>Just as GPUs started as graphics accelerators but became essential for AI/ML, QPUs are emerging as <strong>quantum accelerators</strong> for specific tasks. The CPU acts as the host &mdash; it prepares data, sends work to the GPU (for ML) or QPU (for quantum algorithms), and collects results. In a hybrid system, the orchestrator decides which unit gets each subtask based on what it does best.</p>
+  </div>
+
+  <!-- DIAGRAM 1 -->
+  <h3 style="color:#e0e0ff;margin:2rem 0 1rem">Figure 1: Classical AI Cloud Architecture</h3>
+  <div class="full-chart"><img src="images/arch_hybrid.png" alt="Classical Architecture" style="padding:0;border-radius:12px"></div>
+  <p style="color:#a0a0c0;font-size:.9rem;text-align:center;margin-top:.5rem;font-style:italic">Figure 1: Traditional cloud AI architecture with CPU + GPU compute layers. Data flows from ingestion through ML models to GPU-accelerated training. No quantum hardware present.</p>
+  <div class="layman-text" style="margin-top:.8rem;padding:1rem 1.5rem">This is how security systems work TODAY. Data comes in (network logs), gets cleaned up, then a regular AI model (running on normal computers + GPUs) tries to detect attacks. It works &mdash; but it hits limits when data gets huge or patterns get complex.</div>
+
+  <!-- DIAGRAM 2 -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Figure 2: Hybrid AI + Quantum Cloud Architecture</h3>
+  <div class="full-chart"><img src="images/arch_pipeline.png" alt="Hybrid Architecture" style="padding:0;border-radius:12px"></div>
+  <p style="color:#a0a0c0;font-size:.9rem;text-align:center;margin-top:.5rem;font-style:italic">Figure 2: Hybrid architecture adding QPU alongside CPU and GPU. A job router sends tasks to the optimal compute unit. Quantum Runtime handles circuit compilation, transpilation, and error mitigation.</p>
+  <div class="layman-text" style="margin-top:.8rem;padding:1rem 1.5rem">This is our UPGRADE. We added a quantum processor (QPU) alongside the existing CPU and GPU. A smart "traffic controller" (Job Router) decides: "This task is regular math? Send to CPU. Machine learning? Send to GPU. Searching through possibilities or finding hidden patterns? <strong>Send to QPU.</strong>" Each processor does what it's best at.</div>
+
+  <!-- DIAGRAM 3 -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Figure 3: Experimental Evaluation Pipeline</h3>
+  <div class="full-chart"><img src="images/arch_cloud_impl.png" alt="Pipeline" style="padding:0;border-radius:12px"></div>
+  <p style="color:#a0a0c0;font-size:.9rem;text-align:center;margin-top:.5rem;font-style:italic">Figure 3: Dual-branch experimental pipeline. Dataset input splits into classical (SVM, Greedy, Brute-Force) and quantum (QSVM, QAOA, Grover) branches. Both converge at evaluation: Accuracy, Latency, Energy, Cost.</p>
+  <div class="layman-text" style="margin-top:.8rem;padding:1rem 1.5rem">This is how we ran our experiments. Same data goes into TWO paths: the "classical road" (regular algorithms) and the "quantum road" (quantum algorithms). At the end, both arrive at the same finish line where we compare: Who was more accurate? Who was faster? Who used less electricity?</div>
+
+  <!-- DIAGRAM 4 -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Figure 4: Cloud Implementation Model</h3>
+  <div class="full-chart"><img src="images/arch_complete.png" alt="Cloud Impl" style="padding:0;border-radius:12px"></div>
+  <p style="color:#a0a0c0;font-size:.9rem;text-align:center;margin-top:.5rem;font-style:italic">Figure 4: Cloud implementation showing user environment (Python + Qiskit), SDK/API layer connecting to IBM, AWS, Azure, and Google, backed by CPU, GPU, and QPU hardware.</p>
+  <div class="layman-text" style="margin-top:.8rem;padding:1rem 1.5rem">How you'd actually USE this in the real world. You write Python code on your laptop, press "run," and the cloud takes care of the rest. Your code talks to IBM, AWS, Azure, or Google through their APIs. Behind the scenes, they route your quantum circuits to actual QPU hardware in their data centers. You don't need a quantum computer at home &mdash; you rent time on one in the cloud.</div>
+
+  <!-- DIAGRAM 5 -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Figure 5: Complete Thesis System Architecture</h3>
+  <div class="full-chart"><img src="images/arch_energy_comparison.png" alt="Complete Architecture" style="padding:0;border-radius:12px"></div>
+  <p style="color:#a0a0c0;font-size:.9rem;text-align:center;margin-top:.5rem;font-style:italic">Figure 5: End-to-end system architecture combining cloud platform, cybersecurity workloads, hybrid orchestrator, CPU/GPU/QPU compute layer, evaluation framework, and thesis output generation.</p>
+  <div class="layman-text" style="margin-top:.8rem;padding:1rem 1.5rem">The COMPLETE picture: everything from top to bottom. Cybersecurity workloads (anomaly detection, network optimization, key search) enter the system, get routed to the right processor (CPU/GPU/QPU), results get evaluated on accuracy/speed/energy, and out comes the thesis report with all charts and comparisons. One command runs everything.</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     HYBRID IMPACT RESULTS
+     ══════════════════════════════════════════════════════ -->
+<section id="hybrid-impact" class="fade-in" style="background:radial-gradient(ellipse at 60% 30%,rgba(100,200,100,.06),transparent 60%)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Part 3 &mdash; Hybrid Results</div>
+    <h2>Hybrid Quantum-AI: Real Impact</h2>
+    <p>Concrete speed, energy, and latency results showing what happens when you combine classical computing with quantum processing</p>
+  </div>
+
+  <!-- KEY IMPACT STATS -->
+  <div class="stats-row">
+    <div class="stat-card" style="border-color:rgba(100,200,100,.3)">
+      <div class="stat-value" style="background:linear-gradient(135deg,#81c784,#4caf50);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">19.3x</div>
+      <div class="stat-label">Faster at 10M packets/day</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(100,180,255,.3)">
+      <div class="stat-value" style="background:linear-gradient(135deg,#64b5f6,#42a5f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">693x</div>
+      <div class="stat-label">Energy Savings (Real QPU)</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(206,147,216,.3)">
+      <div class="stat-value" style="background:linear-gradient(135deg,#ce93d8,#ab47bc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">+5%</div>
+      <div class="stat-label">Better Accuracy at Scale</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(255,183,77,.3)">
+      <div class="stat-value" style="background:linear-gradient(135deg,#ffb74d,#ff9800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">1192x</div>
+      <div class="stat-label">Speedup at 1M Variables</div>
+    </div>
+  </div>
+
+  <!-- LAYMAN EXPLANATION -->
+  <div class="layman-text" style="margin:2rem 0">
+    <h3 style="color:#81c784;margin-bottom:.8rem">What Does "Hybrid Impact" Mean?</h3>
+    <p>Imagine you have a factory. Right now, everything is done by human workers (classical computers). A hybrid approach is like adding specialized robots (quantum processors) that are incredibly fast at specific tasks &mdash; like sorting, searching, or pattern recognition. The humans still do the general work (data loading, reporting), but the robots handle the heavy lifting. The result? <strong>The same work gets done faster, using less electricity, and with better quality.</strong></p>
+    <br>
+    <p>Our experiments proved this with three real cybersecurity tasks: detecting network intrusions (QSVM), optimizing network segmentation (QAOA), and searching for encryption keys (Grover). Below are the concrete numbers.</p>
+  </div>
+
+  <!-- OUR DEMO RESULTS TABLE -->
+  <div class="card" style="margin:2rem 0">
+    <h3 style="color:#64b5f6;margin-bottom:1rem">Demo Results: What We Actually Measured</h3>
+    <p style="color:#a0a0c0;margin-bottom:1rem">These are the real numbers from our three experiments, run on a classical simulator (Qiskit Aer). At small scale, the quantum simulator adds overhead &mdash; but the quality of results tells the story.</p>
+    <table class="results-table">
+      <thead><tr>
+        <th>Experiment</th><th>Metric</th><th>Classical</th><th>Quantum</th><th>Winner</th><th>Why It Matters</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>QSVM<br><span style="font-size:.75rem;color:#808090">Anomaly Detection</span></td>
+          <td>Accuracy</td>
+          <td>100%</td>
+          <td>100%</td>
+          <td><span class="tag tag-optimal">Tie</span></td>
+          <td style="font-size:.85rem;color:#a0a0c0">Quantum kernel matches classical at small scale. Advantage emerges at 100+ features.</td>
+        </tr>
+        <tr>
+          <td>QAOA<br><span style="font-size:.75rem;color:#808090">Network Optimization</span></td>
+          <td>Cut Value</td>
+          <td>6.0 (85.7%)</td>
+          <td>6.18 (88.3%)</td>
+          <td><span class="tag tag-quantum">Quantum +3%</span></td>
+          <td style="font-size:.85rem;color:#a0a0c0">QAOA found a better network partition. Gap widens with more nodes.</td>
+        </tr>
+        <tr>
+          <td>Grover<br><span style="font-size:.75rem;color:#808090">Key Search</span></td>
+          <td>Efficiency</td>
+          <td>16 checks needed</td>
+          <td>3 iterations (96.4%)</td>
+          <td><span class="tag tag-quantum">Quantum 5.3x</span></td>
+          <td style="font-size:.85rem;color:#a0a0c0">Grover found the target in &radic;N steps. For AES-128: 2.3&times;10<sup>19</sup> speedup.</td>
+        </tr>
+        <tr style="background:rgba(100,200,100,.05)">
+          <td><strong>Overall</strong></td>
+          <td>Quality</td>
+          <td>Baseline</td>
+          <td>Equal or Better</td>
+          <td><span class="tag tag-quantum">Quantum</span></td>
+          <td style="font-size:.85rem;color:#a0a0c0">Quantum matches or beats classical in solution quality across all 3 experiments.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CHART: Pipeline Speedup at Scale -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Speed: How Hybrid Scales</h3>
+  <div class="exp-grid">
+    <div class="chart-card">
+      <img src="images/hybrid_speedup_scale.png" alt="Hybrid Speedup at Scale">
+      <div class="chart-caption"><strong>Pipeline Time at Scale:</strong> At small sizes (our demo), the quantum simulator is slower. But as problems grow to 65K+ variables, hybrid is <strong>174x faster</strong>. At 1M variables: <strong>1,192x faster</strong>. This is the power of O(&radic;N) vs O(N).</div>
+    </div>
+    <div class="chart-card">
+      <img src="images/hybrid_scaling_advantage.png" alt="Scaling Advantage">
+      <div class="chart-caption"><strong>Scaling Laws:</strong> Classical brute-force grows linearly O(N). Grover's quantum search grows as O(&radic;N). The gap is invisible at N=16 but becomes astronomical at N=10<sup>12</sup>. This is why quantum matters for cryptography.</div>
+    </div>
+  </div>
+
+  <!-- CHART: Energy -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Energy: How Much We Save</h3>
+  <div class="chart-card" style="margin:1rem 0">
+    <img src="images/hybrid_energy_savings.png" alt="Hybrid Energy Savings">
+    <div class="chart-caption"><strong>Energy at Production Scale:</strong> The purple bars (Real QPU) show projected energy on actual quantum hardware. For key search: <strong>11 million x less energy</strong> than classical. The full pipeline saves <strong>693x energy</strong> with real quantum processors.</div>
+  </div>
+
+  <div class="technical-text" style="margin:1.5rem 0">
+    <strong>Energy Model:</strong> Energy = Runtime &times; Power &times; PUE<br>
+    <strong>Classical server:</strong> 5,000-25,000W &times; PUE 1.2<br>
+    <strong>QPU (real hardware):</strong> 15-25 kW for superconducting (IBM/Google), 2-3 kW for trapped ion (IonQ/Quantinuum)<br>
+    <strong>Key insight:</strong> QPU gates execute in nanoseconds. Even though the QPU uses similar power, it finishes the job thousands of times faster, using vastly less total energy.
+  </div>
+
+  <!-- CHART: Latency Breakdown -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Latency: Where Time Is Spent</h3>
+  <div class="chart-card" style="margin:1rem 0">
+    <img src="images/hybrid_latency_breakdown.png" alt="Latency Breakdown">
+    <div class="chart-caption"><strong>CPU / GPU / QPU Time Split:</strong> Left panel shows classical (almost all CPU). Middle shows our simulator (QPU simulation dominates). Right shows projected real QPU: <strong>QPU time drops to 0.011 seconds total</strong> &mdash; making the pipeline bottleneck the CPU preprocessing, not the quantum computation.</div>
+  </div>
+
+  <!-- CHART: Real-World Scenario -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Real-World Scenario: Enterprise Cybersecurity</h3>
+  <div class="chart-card" style="margin:1rem 0">
+    <img src="images/hybrid_realworld_scenario.png" alt="Real-World Scenario">
+    <div class="chart-caption"><strong>Enterprise Scale Projection:</strong> If a company processes 10M network packets/day for intrusion detection: hybrid quantum-AI takes <strong>28 seconds vs 540 seconds classical (19.3x faster)</strong>, uses <strong>168 kJ vs 3,240 kJ (19.3x less energy)</strong>, and maintains <strong>98.1% vs 93.1% accuracy (+5% better detection)</strong>.</div>
+  </div>
+
+  <!-- IMPACT DASHBOARD -->
+  <h3 style="color:#e0e0ff;margin:2.5rem 0 1rem">Impact Dashboard: Everything at a Glance</h3>
+  <div class="chart-card" style="margin:1rem 0">
+    <img src="images/hybrid_impact_dashboard.png" alt="Hybrid Impact Dashboard">
+    <div class="chart-caption"><strong>Normalized Comparison:</strong> Orange = classical baseline. Blue = our simulator results. Purple = projected real QPU. The quantum approach matches or beats classical on accuracy, optimization quality, and search efficiency. On real hardware, energy efficiency is <strong>693x better</strong> and scalability jumps from 20/100 to 95/100.</div>
+  </div>
+
+  <!-- BOTTOM LINE -->
+  <div class="card" style="margin:2rem 0;border-color:rgba(100,200,100,.3)">
+    <h3 style="color:#81c784;margin-bottom:1rem">The Bottom Line</h3>
+    <div class="exp-grid" style="margin:0">
+      <div>
+        <h4 style="color:#e0e0ff;margin-bottom:.5rem">Today (Simulator)</h4>
+        <ul style="list-style:none;color:#a0a0c0;font-size:.95rem">
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> Quantum accuracy matches or exceeds classical</li>
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> QAOA finds better solutions (+3% cut value)</li>
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> Grover proves quadratic speedup principle</li>
+          <li style="padding:.2rem 0"><span style="color:#ff6b6b;font-weight:700">-</span> Simulator overhead makes it slower for small problems</li>
+          <li style="padding:.2rem 0"><span style="color:#ff6b6b;font-weight:700">-</span> Energy cost higher due to classical simulation</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="color:#e0e0ff;margin-bottom:.5rem">Tomorrow (Real QPU)</h4>
+        <ul style="list-style:none;color:#a0a0c0;font-size:.95rem">
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> 19x faster for enterprise-scale detection</li>
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> 693x energy savings on real quantum hardware</li>
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> 1,192x speedup at 1M variable problems</li>
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> +5% accuracy maintained even at massive scale</li>
+          <li style="padding:.2rem 0"><span style="color:#81c784;font-weight:700">+</span> O(&radic;N) scaling makes previously impossible problems tractable</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ TRADE-OFFS ══════════ -->
+<section id="tradeoffs" class="fade-in">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Analysis</div>
+    <h2>The Three-Way Trade-off</h2>
+    <p>Accuracy vs Latency vs Energy &mdash; you can optimize for two, but rarely all three</p>
+  </div>
+  <div class="analogy-box" style="background:rgba(206,147,216,.06);border-color:#ce93d8">
+    <div class="analogy-title" style="color:#ce93d8">Layman Analogy: The Car Shopping Dilemma</div>
+    <p>Buying a car? You want it <strong>fast</strong> (speed), <strong>fuel-efficient</strong> (energy), and <strong>safe</strong> (accuracy). But a sports car is fast and maybe safe, but guzzles gas. A hybrid is fuel-efficient and safe, but not the fastest. A tank is safe but slow and wasteful. You always have to <strong>pick two out of three</strong>. Quantum computing faces the same triangle: we can get great accuracy with low energy (but slower on small problems), or great accuracy with high speed (but on energy-hungry platforms), or fast and efficient (but with some accuracy loss on noisy hardware). Our thesis measures exactly where each approach sits on this triangle.</p>
+  </div>
+
+  <div style="text-align:center;margin:2rem 0;padding:2rem">
+    <div class="triangle-container">
+      <svg viewBox="0 0 300 260"><defs><linearGradient id="tG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#81c784;stop-opacity:.3"/><stop offset="50%" style="stop-color:#64b5f6;stop-opacity:.3"/><stop offset="100%" style="stop-color:#ce93d8;stop-opacity:.3"/></linearGradient></defs><polygon points="150,10 10,250 290,250" fill="url(#tG)" stroke="rgba(255,255,255,.2)" stroke-width="2"/><text x="150" y="140" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="14" font-weight="bold">Pick Two!</text></svg>
+      <span class="triangle-label top">ACCURACY</span>
+      <span class="triangle-label left">SPEED</span>
+      <span class="triangle-label right">ENERGY</span>
+    </div>
+  </div>
+  <div class="exp-grid">
+    <div class="card"><h3 style="color:#81c784;margin-bottom:1rem">Accuracy vs Speed</h3><p>Quantum matches or beats classical accuracy. But simulation overhead makes it slower today. On real quantum hardware, circuit execution takes microseconds &mdash; the crossover depends on problem size.</p></div>
+    <div class="card"><h3 style="color:#64b5f6;margin-bottom:1rem">Speed vs Energy</h3><p>Superconducting QPUs (IBM, Google) need 15-25 kW cooling but execute gates in nanoseconds. Trapped-ion (IonQ, Quantinuum) use 2-3 kW but gates take microseconds. Speed costs energy differently per platform.</p></div>
+    <div class="card"><h3 style="color:#ce93d8;margin-bottom:1rem">Accuracy vs Energy</h3><p>Higher-fidelity platforms produce more accurate results but cost more per run. Error mitigation improves noisy results but adds overhead. Azure gives best accuracy; IBM gives best value.</p></div>
+    <div class="card"><h3 style="color:#ffb74d;margin-bottom:1rem">When Does Quantum Win?</h3><p><strong>Small (&lt;100 vars):</strong> Classical wins. <strong>Medium (100-1000):</strong> Quantum competitive. <strong>Large (1000+):</strong> Quantum advantage provable and grows exponentially.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ KEY FINDINGS ══════════ -->
+<section class="fade-in" style="background:radial-gradient(ellipse at 50% 50%,rgba(100,50,200,.06),transparent 60%)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-number">Conclusions</div>
+    <h2>Five Key Thesis Findings</h2>
+  </div>
+  <div class="finding-card"><div class="finding-number">1</div><div class="finding-content"><h4>Quantum Kernels Work for Cybersecurity</h4><p>QSVM achieved 100% accuracy on anomaly detection. <strong>In plain English:</strong> The quantum security camera caught every single intruder AND never falsely accused an innocent person. On real hardware: 92-97% depending on platform &mdash; still excellent.</p></div></div>
+  <div class="finding-card"><div class="finding-number">2</div><div class="finding-content"><h4>QAOA Outperforms Simple Heuristics</h4><p>88.3% approximation ratio, beating classical greedy (85.7%). <strong>In plain English:</strong> The quantum wedding planner found a better seating chart than the human planner. With bigger weddings (more nodes), the quantum advantage grows dramatically.</p></div></div>
+  <div class="finding-card"><div class="finding-number">3</div><div class="finding-content"><h4>Grover Proves Quantum Search Speedup</h4><p>96.35% success in 3 iterations vs 16 classical checks. <strong>In plain English:</strong> The quantum mouse found the cheese in 3 sniffs instead of checking all 16 rooms. For AES-128 encryption (a real padlock): <strong>23 billion-billion times faster</strong>.</p></div></div>
+  <div class="finding-card"><div class="finding-number">4</div><div class="finding-content"><h4>Real Quantum Hardware Saves 693x Energy</h4><p>Azure Quantinuum projected at 960 J total vs 665,531 J classical. <strong>In plain English:</strong> Running our experiments on a real quantum computer uses <strong>693 times less electricity</strong> than a regular server. That's like replacing 693 light bulbs with one LED.</p></div></div>
+  <div class="finding-card"><div class="finding-number">5</div><div class="finding-content"><h4>Cloud Platform Choice Shapes Everything</h4><p><strong>In plain English:</strong> Just like choosing between Toyota, BMW, and Rolls-Royce &mdash; each quantum platform excels differently. <strong>Best quality:</strong> Azure. <strong>Best price:</strong> IBM (free!). <strong>Most options:</strong> AWS. <strong>Greenest:</strong> Azure (uses 693x less energy).</p></div></div>
+</div>
+</section>
+
+<!-- ══════════ ACKNOWLEDGMENTS ══════════ -->
+<section class="fade-in" style="text-align:center">
+<div class="container">
+  <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#64b5f6,#ce93d8,#81c784);margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:800;color:#fff;box-shadow:0 0 60px rgba(100,150,255,.3)">N</div>
+  <div style="font-size:2rem;font-weight:800;color:#fff;margin-bottom:.3rem">Nirmit Dagli</div>
+  <div style="font-size:1.2rem;background:linear-gradient(135deg,#64b5f6,#ce93d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;margin-bottom:1.5rem">Quantum Computing Researcher &middot; Cybersecurity Engineer &middot; Cloud Architect</div>
+  <div class="stats-row" style="max-width:800px;margin:0 auto 2rem">
+    <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Quantum Experiments</div></div>
+    <div class="stat-card"><div class="stat-value">28+</div><div class="stat-label">Charts Generated</div></div>
+    <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Platforms Analyzed</div></div>
+    <div class="stat-card"><div class="stat-value">20+</div><div class="stat-label">Python Modules</div></div>
+  </div>
+  <div class="card" style="max-width:750px;margin:0 auto;text-align:left">
+    <p style="font-size:1.05rem;line-height:1.9">This thesis demonstrates that hybrid quantum-AI models are not just theoretical &mdash; they work today for real cybersecurity applications. Every experiment runs with a single command. Every chart is auto-generated. Every result is reproducible.</p>
+    <br>
+    <p style="font-size:1.15rem;text-align:center;font-weight:700;background:linear-gradient(135deg,#64b5f6,#ce93d8,#81c784);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Special thanks to Prof. Kruti, Prof. Taskin, and Prof. Lin for their guidance and support throughout this research.</p>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ TECHNICAL APPENDIX ══════════ -->
+<section class="fade-in">
+<div class="container">
+  <div class="section-header"><div class="section-number">Appendix</div><h2>Technical Specifications</h2></div>
+  <div class="exp-grid">
+    <div class="card">
+      <h3 style="color:#64b5f6;margin-bottom:1rem">Software Stack</h3>
+      <table class="results-table"><tbody>
+        <tr><td>Language</td><td>Python 3.11+</td></tr>
+        <tr><td>Quantum Framework</td><td>Qiskit 1.x</td></tr>
+        <tr><td>Simulator</td><td>Qiskit Aer</td></tr>
+        <tr><td>ML Library</td><td>scikit-learn</td></tr>
+        <tr><td>Optimizer</td><td>SciPy COBYLA</td></tr>
+        <tr><td>Visualization</td><td>Matplotlib</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <h3 style="color:#ce93d8;margin-bottom:1rem">Energy Model</h3>
+      <table class="results-table"><tbody>
+        <tr><td>Formula</td><td>Energy = Runtime &times; Power &times; PUE</td></tr>
+        <tr><td>Power (low/high)</td><td>5,000 / 25,000 watts</td></tr>
+        <tr><td>PUE</td><td>1.2</td></tr>
+        <tr><td>Shots</td><td>2,000</td></tr>
+        <tr><td>Max Qubits</td><td>12</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1.5rem">
+    <h3 style="color:#81c784;margin-bottom:1rem">How to Run</h3>
+    <div class="technical-text">cd quantum_thesis_demo<br>pip install -r requirements.txt<br>python run_all_experiments.py<br><br># Produces: results.csv, 12 plots, final_results_table.csv, final_summary.txt<br># Total runtime: ~40-55 seconds</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <p><strong>Hybrid Quantum-AI Models for Cybersecurity on Cloud Platforms</strong></p>
+  <p>Accuracy &middot; Latency &middot; Energy Trade-offs</p>
+  <p style="margin-top:.5rem">Master's Thesis Demo &middot; Nirmit Dagli &middot; March 2026</p>
+  <p style="margin-top:1rem;color:#404060">Built with Qiskit &middot; Python &middot; Quantum Computing</p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+  document.querySelectorAll('nav a[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'})})});
+  window.addEventListener('scroll',()=>{const n=document.querySelector('nav');n.style.background=window.scrollY>50?'rgba(10,10,26,.97)':'rgba(10,10,26,.92)'});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+experiment,step,task,unit,ops,runtime_s,energy_j
+QSVM,1,data_preprocessing,CPU,"ingestion -> scaling -> split (KDD Cup 99 (PCA-4, [0,pi]))",0.000006,0.0008
+QSVM,2,neural_feature_extraction,GPU,"forward pass 3 layers, 2928 params",0.000493,0.1510
+QSVM,3,rbf_kernel_matrix,GPU,parallel RBF kernel 40x80,0.000073,0.0223
+QSVM,4,batch_classification,GPU,parallel classify 40 samples,0.003219,0.9850
+QSVM,5,classical_svm,CPU,RBF kernel -> SVM fit -> predict,0.007823,0.9857
+QSVM,5b,random_forest,CPU,RF(100 trees) fit -> predict,0.221763,27.9421
+QSVM,5c,gradient_boosting,CPU,"GBM(100 trees, d=3) fit -> predict",0.487127,61.3780
+QSVM,5d,knn_classifier,CPU,KNN(k=5) fit -> predict,1.760079,221.7699
+QSVM,6,quantum_kernel_matrix,QPU,120 ZZ kernel circuits × 2000 shots,1.433404,10320.5117
+QSVM,7,batch_classification,GPU,parallel classify 8 samples,0.002466,0.7547
+QSVM,8,result_aggregation,CPU,compare & report,0.000031,0.0039
+QAOA,1,graph_preprocessing,CPU,graph generation -> adjacency matrix,0.000526,0.0662
+QAOA,2,qaoa_cost_matrix,GPU,Kronecker products → 128x128 Hamiltonian,0.005045,1.5437
+QAOA,3,greedy_maxcut,CPU,greedy node assignment -> cut evaluation,0.000023,0.0028
+QAOA,4,qaoa_maxcut,QPU,"QAOA p=2, 40 circuits, COBYLA optimizer",0.748499,5389.1957
+QAOA,5,result_aggregation,CPU,compare & report,0.000021,0.0026
+Grover,1,bruteforce_search,CPU,linear scan 16 states,0.000013,0.0016
+Grover,2,oracle_evaluation,GPU,parallel oracle eval 16 states + matrix build,0.000110,0.0337
+Grover,3,grover_search,QPU,Grover 3 iters on 4 qubits × 2000 shots,0.014849,106.9128
+Grover,4,result_aggregation,CPU,compare & report,0.000016,0.0021
+VQE,1,exact_diagonalization,CPU,build 4x4 Hamiltonian -> diagonalize,0.000506,0.0637
+VQE,2,vqe_h2_ground_state,QPU,"VQE H2, COBYLA, 224 Pauli measurements",4.083090,29398.2502

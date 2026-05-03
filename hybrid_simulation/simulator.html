@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hybrid CPU+GPU+QPU Simulator | Quantum Cybersecurity</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a1a;color:#e0e0f0;min-height:100vh;overflow-x:hidden}
+
+/* Background */
+.bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:radial-gradient(ellipse at 20% 50%,rgba(50,50,150,.15),transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(100,50,150,.1),transparent 60%)}
+
+/* Layout */
+.container{max-width:1400px;margin:0 auto;padding:1.5rem}
+header{text-align:center;padding:2rem 0 1rem}
+header h1{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#e0e0ff 0%,#64b5f6 40%,#ce93d8 70%,#81c784 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+header p{color:#a0a0c0;font-size:1rem}
+
+/* Unit Selector */
+.selector-panel{background:rgba(30,45,82,.6);border:1px solid rgba(100,180,255,.2);border-radius:16px;padding:1.5rem;margin:1.5rem 0;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;justify-content:center}
+.selector-panel h3{width:100%;text-align:center;color:#64b5f6;font-size:1.1rem;margin-bottom:.5rem}
+
+.unit-toggle{position:relative;cursor:pointer;user-select:none}
+.unit-toggle input{display:none}
+.unit-card{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1rem 2rem;border-radius:12px;border:2px solid rgba(255,255,255,.1);background:rgba(20,30,51,.8);transition:all .3s}
+.unit-card .icon{font-size:2.5rem;line-height:1}
+.unit-card .name{font-size:1.1rem;font-weight:700;color:#e0e0f0}
+.unit-card .desc{font-size:.75rem;color:#7a8ba8;text-align:center;max-width:140px}
+.unit-toggle input:checked + .unit-card{border-color:var(--color);box-shadow:0 0 20px var(--glow);background:rgba(var(--rgb),.15)}
+.unit-toggle input:checked + .unit-card .name{color:var(--color)}
+
+.unit-toggle.cpu{--color:#4C9BE8;--glow:rgba(76,155,232,.3);--rgb:76,155,232}
+.unit-toggle.gpu{--color:#50C878;--glow:rgba(80,200,120,.3);--rgb:80,200,120}
+.unit-toggle.qpu{--color:#9C6ADE;--glow:rgba(156,106,222,.3);--rgb:156,106,222}
+
+.run-btn{background:linear-gradient(135deg,#4C9BE8,#9C6ADE);color:white;border:none;padding:.8rem 2.5rem;border-radius:10px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;letter-spacing:.5px}
+.run-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(100,155,232,.4)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+.combo-label{text-align:center;margin:.5rem 0;padding:.4rem 1rem;border-radius:20px;display:inline-block;font-weight:700;font-size:.9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+
+/* Task Selector */
+.task-selector{display:flex;gap:.8rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
+.task-btn{padding:.6rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(30,45,82,.5);color:#a0a0c0;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .3s}
+.task-btn.active{background:rgba(76,155,232,.2);border-color:#4C9BE8;color:#64b5f6}
+.task-btn:hover{border-color:rgba(100,180,255,.4)}
+
+/* Results */
+.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin:1.5rem 0}
+.result-card{background:rgba(30,45,82,.6);border:1px solid rgba(100,180,255,.15);border-radius:14px;padding:1.2rem;transition:all .3s}
+.result-card h4{color:#4DD9D9;font-size:1rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.metric-row:last-child{border-bottom:none}
+.metric-label{color:#7a8ba8;font-size:.85rem}
+.metric-value{font-weight:700;font-size:.95rem}
+.metric-value.good{color:#50C878}
+.metric-value.warn{color:#F0963C}
+.metric-value.high{color:#E8555A}
+
+/* Pipeline visualization */
+.pipeline-viz{background:rgba(30,45,82,.4);border:1px solid rgba(255,215,0,.15);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
+.pipeline-viz h3{color:#FFD700;text-align:center;margin-bottom:1rem}
+.pipeline-steps{display:flex;flex-direction:column;gap:.6rem}
+.step{display:flex;align-items:center;gap:.8rem;padding:.5rem .8rem;border-radius:8px;background:rgba(20,30,51,.6);transition:all .3s}
+.step .unit-badge{padding:.2rem .6rem;border-radius:6px;font-size:.75rem;font-weight:700;min-width:40px;text-align:center;color:white}
+.step .unit-badge.CPU{background:rgba(76,155,232,.3);border:1px solid #4C9BE8}
+.step .unit-badge.GPU{background:rgba(80,200,120,.3);border:1px solid #50C878}
+.step .unit-badge.QPU{background:rgba(156,106,222,.3);border:1px solid #9C6ADE}
+.step .task-name{flex:1;font-size:.85rem;color:#e0e0f0}
+.step .step-runtime{color:#F0963C;font-size:.85rem;font-weight:600;min-width:80px;text-align:right}
+.step .step-energy{color:#50C878;font-size:.85rem;min-width:80px;text-align:right}
+
+/* Bar charts */
+.bar-chart-container{margin:1.5rem 0}
+.bar-chart-container h3{color:#e0e0f0;text-align:center;margin-bottom:1rem;font-size:1.1rem}
+.chart-row{display:flex;align-items:center;gap:.8rem;padding:.4rem 0}
+.chart-label{min-width:100px;font-size:.85rem;color:#7a8ba8;text-align:right}
+.chart-bar-bg{flex:1;height:28px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;position:relative}
+.chart-bar{height:100%;border-radius:6px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding:0 .5rem;font-size:.75rem;font-weight:700;color:white;min-width:40px}
+.chart-bar.cpu{background:linear-gradient(90deg,rgba(76,155,232,.6),#4C9BE8)}
+.chart-bar.gpu{background:linear-gradient(90deg,rgba(80,200,120,.6),#50C878)}
+.chart-bar.qpu{background:linear-gradient(90deg,rgba(156,106,222,.6),#9C6ADE)}
+.chart-value{min-width:100px;font-size:.85rem;color:#e0e0f0;font-weight:600}
+
+/* Comparison table */
+.compare-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+.compare-table th{padding:.6rem;text-align:left;color:#64b5f6;border-bottom:2px solid rgba(100,180,255,.2);font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
+.compare-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.05);color:#e0e0f0}
+.compare-table tr:hover{background:rgba(100,180,255,.05)}
+.compare-table .highlight{color:#50C878;font-weight:700}
+
+/* History */
+.history-panel{background:rgba(30,45,82,.4);border:1px solid rgba(100,180,255,.1);border-radius:14px;padding:1.2rem;margin:1.5rem 0}
+.history-panel h3{color:#ce93d8;margin-bottom:.8rem}
+.history-items{display:flex;flex-wrap:wrap;gap:.5rem}
+.history-chip{padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:600;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.3rem}
+.history-chip:hover{background:rgba(100,180,255,.1);border-color:rgba(100,180,255,.3)}
+.history-chip .x{color:#E8555A;margin-left:.3rem;cursor:pointer}
+
+/* Responsive */
+@media(max-width:768px){
+  header h1{font-size:1.5rem}
+  .selector-panel{padding:1rem}
+  .results-grid{grid-template-columns:1fr}
+  .unit-card{padding:.8rem 1.2rem}
+}
+
+/* Animation */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeIn .4s ease-out}
+.hidden{display:none}
+
+/* No selection warning */
+.no-selection{text-align:center;padding:3rem;color:#7a8ba8;font-size:1.1rem}
+.no-selection .icon{font-size:3rem;margin-bottom:1rem;opacity:.5}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="container">
+
+<header>
+  <h1>Hybrid Processing Unit Simulator</h1>
+  <p>Select CPU, GPU, and/or QPU to run cybersecurity experiments and compare performance</p>
+</header>
+
+<!-- Unit Selection -->
+<div class="selector-panel">
+  <h3>Select Processing Units</h3>
+
+  <label class="unit-toggle cpu">
+    <input type="checkbox" id="cpu-toggle" checked>
+    <div class="unit-card">
+      <div class="icon">&#x1F4BB;</div>
+      <div class="name">CPU</div>
+      <div class="desc">Data pipeline, classical algorithms, control logic</div>
+    </div>
+  </label>
+
+  <label class="unit-toggle gpu">
+    <input type="checkbox" id="gpu-toggle">
+    <div class="unit-card">
+      <div class="icon">&#x1F3AE;</div>
+      <div class="name">GPU</div>
+      <div class="desc">Parallel matrix ops, kernel computation, neural features</div>
+    </div>
+  </label>
+
+  <label class="unit-toggle qpu">
+    <input type="checkbox" id="qpu-toggle">
+    <div class="unit-card">
+      <div class="icon">&#x269B;</div>
+      <div class="name">QPU</div>
+      <div class="desc">Quantum kernels, QAOA circuits, Grover search</div>
+    </div>
+  </label>
+
+  <div style="width:100%;text-align:center">
+    <div class="combo-label" id="combo-label">CPU Only</div>
+  </div>
+
+  <button class="run-btn" id="run-btn" onclick="runSimulation()">Run Simulation</button>
+</div>
+
+<!-- Task Selector -->
+<div style="text-align:center">
+  <div class="task-selector">
+    <div class="task-btn active" data-task="all" onclick="selectTask('all')">All Experiments</div>
+    <div class="task-btn" data-task="qsvm" onclick="selectTask('qsvm')">QSVM Anomaly Detection</div>
+    <div class="task-btn" data-task="qaoa" onclick="selectTask('qaoa')">QAOA Network Optimization</div>
+    <div class="task-btn" data-task="grover" onclick="selectTask('grover')">Grover Search</div>
+  </div>
+</div>
+
+<!-- No selection warning -->
+<div id="no-selection" class="no-selection hidden">
+  <div class="icon">&#x26A0;</div>
+  <div>Select at least one processing unit to run the simulation</div>
+</div>
+
+<!-- Results Area -->
+<div id="results-area" class="hidden">
+
+  <!-- Summary Cards -->
+  <div class="results-grid" id="summary-cards"></div>
+
+  <!-- Pipeline Visualization -->
+  <div class="pipeline-viz" id="pipeline-viz">
+    <h3>Pipeline Execution Steps</h3>
+    <div class="pipeline-steps" id="pipeline-steps"></div>
+  </div>
+
+  <!-- Performance Bars -->
+  <div class="results-grid">
+    <div class="result-card">
+      <h4>Runtime Breakdown</h4>
+      <div id="runtime-bars"></div>
+    </div>
+    <div class="result-card">
+      <h4>Energy Breakdown</h4>
+      <div id="energy-bars"></div>
+    </div>
+  </div>
+
+  <!-- Comparison with other combos -->
+  <div class="result-card" style="margin:1.5rem 0">
+    <h4>Compare All Configurations</h4>
+    <div style="overflow-x:auto">
+      <table class="compare-table" id="compare-table"></table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Run History -->
+<div class="history-panel">
+  <h3>Run History (click to compare)</h3>
+  <div class="history-items" id="history-items">
+    <span style="color:#7a8ba8;font-size:.85rem">No runs yet. Select units and click Run Simulation.</span>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ── Pre-computed simulation data ─────────────────────────────
+const DATA = {
+  "CPU": {
+    "units": {"cpu": true, "gpu": false, "qpu": false},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "CPU", "task": "Data Preprocessing", "runtime": 0.0008, "energy": 0.103}, {"unit": "CPU", "task": "Classical SVM (RBF)", "runtime": 0.0021, "energy": 0.260}], "accuracy": 1.0, "f1": 1.0, "runtime": 0.0029, "energy": 0.363},
+      "qaoa": {"steps": [{"unit": "CPU", "task": "Graph Generation", "runtime": 0.00014, "energy": 0.018}, {"unit": "CPU", "task": "Greedy MaxCut", "runtime": 0.00001, "energy": 0.001}], "cut_value": 7, "approx_ratio": 1.0, "optimal_cut": 7, "runtime": 0.00015, "energy": 0.019},
+      "grover": {"steps": [{"unit": "CPU", "task": "Brute-Force Search", "runtime": 0.000004, "energy": 0.0005}], "success_prob": 1.0, "iterations": 0, "checks": 7, "runtime": 0.000004, "energy": 0.0005}
+    },
+    "total_runtime": 0.003, "total_energy": 0.382
+  },
+  "GPU": {
+    "units": {"cpu": false, "gpu": true, "qpu": false},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "GPU", "task": "Parallel RBF Kernel", "runtime": 0.00009, "energy": 0.028}, {"unit": "GPU", "task": "Neural Feature Extraction", "runtime": 0.00028, "energy": 0.085}, {"unit": "GPU", "task": "Batch Classification", "runtime": 0.0028, "energy": 0.842}], "accuracy": 1.0, "f1": 1.0, "runtime": 0.0031, "energy": 0.956},
+      "qaoa": {"steps": [{"unit": "GPU", "task": "Cost Hamiltonian (128x128)", "runtime": 0.0028, "energy": 0.867}], "cut_value": 0, "approx_ratio": 0, "optimal_cut": 0, "runtime": 0.0028, "energy": 0.867},
+      "grover": {"steps": [{"unit": "GPU", "task": "Oracle Matrix Construction", "runtime": 0.00005, "energy": 0.014}], "success_prob": 0, "iterations": 0, "checks": 0, "runtime": 0.00005, "energy": 0.014}
+    },
+    "total_runtime": 0.006, "total_energy": 1.837
+  },
+  "QPU": {
+    "units": {"cpu": false, "gpu": false, "qpu": true},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "QPU", "task": "Quantum Kernel (120 circuits)", "runtime": 0.9117, "energy": 6564.56}], "accuracy": 0.625, "f1": 0.571, "runtime": 0.9117, "energy": 6564.56},
+      "qaoa": {"steps": [{"unit": "QPU", "task": "QAOA p=2 (41 circuits)", "runtime": 0.4853, "energy": 3494.44}], "cut_value": 5.36, "approx_ratio": 0.765, "optimal_cut": 7, "runtime": 0.4853, "energy": 3494.44},
+      "grover": {"steps": [{"unit": "QPU", "task": "Grover (3 iterations)", "runtime": 0.0112, "energy": 80.31}], "success_prob": 0.947, "iterations": 3, "checks": 0, "runtime": 0.0112, "energy": 80.31}
+    },
+    "total_runtime": 1.408, "total_energy": 10139.32
+  },
+  "CPU+GPU": {
+    "units": {"cpu": true, "gpu": true, "qpu": false},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "CPU", "task": "Data Preprocessing", "runtime": 0.0015, "energy": 0.185}, {"unit": "CPU", "task": "Classical SVM (RBF)", "runtime": 0.0025, "energy": 0.317}, {"unit": "GPU", "task": "Parallel RBF Kernel", "runtime": 0.00009, "energy": 0.026}, {"unit": "GPU", "task": "Neural Feature Extraction", "runtime": 0.00044, "energy": 0.134}], "accuracy": 1.0, "f1": 1.0, "runtime": 0.0045, "energy": 0.663},
+      "qaoa": {"steps": [{"unit": "CPU", "task": "Graph Generation", "runtime": 0.00025, "energy": 0.032}, {"unit": "CPU", "task": "Greedy MaxCut", "runtime": 0.00001, "energy": 0.001}, {"unit": "GPU", "task": "Cost Hamiltonian (128x128)", "runtime": 0.0038, "energy": 1.157}], "cut_value": 7, "approx_ratio": 1.0, "optimal_cut": 7, "runtime": 0.004, "energy": 1.190},
+      "grover": {"steps": [{"unit": "CPU", "task": "Brute-Force Search", "runtime": 0.000006, "energy": 0.001}, {"unit": "GPU", "task": "Oracle Matrix Construction", "runtime": 0.00007, "energy": 0.020}], "success_prob": 1.0, "iterations": 0, "checks": 7, "runtime": 0.00007, "energy": 0.021}
+    },
+    "total_runtime": 0.0086, "total_energy": 1.873
+  },
+  "CPU+QPU": {
+    "units": {"cpu": true, "gpu": false, "qpu": true},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "CPU", "task": "Data Preprocessing", "runtime": 0.0015, "energy": 0.184}, {"unit": "CPU", "task": "Classical SVM (RBF)", "runtime": 0.0025, "energy": 0.318}, {"unit": "QPU", "task": "Quantum Kernel (120 circuits)", "runtime": 0.9262, "energy": 6668.32}], "accuracy": 1.0, "f1": 1.0, "runtime": 0.930, "energy": 6668.82},
+      "qaoa": {"steps": [{"unit": "CPU", "task": "Graph Generation", "runtime": 0.0003, "energy": 0.038}, {"unit": "CPU", "task": "Greedy MaxCut", "runtime": 0.00001, "energy": 0.001}, {"unit": "QPU", "task": "QAOA p=2 (57 circuits)", "runtime": 0.620, "energy": 4464.43}], "cut_value": 5.40, "approx_ratio": 0.772, "optimal_cut": 7, "runtime": 0.620, "energy": 4464.47},
+      "grover": {"steps": [{"unit": "CPU", "task": "Brute-Force Search", "runtime": 0.000005, "energy": 0.001}, {"unit": "QPU", "task": "Grover (3 iterations)", "runtime": 0.0096, "energy": 68.89}], "success_prob": 0.961, "iterations": 3, "checks": 7, "runtime": 0.0096, "energy": 68.89}
+    },
+    "total_runtime": 1.560, "total_energy": 11202.19
+  },
+  "GPU+QPU": {
+    "units": {"cpu": false, "gpu": true, "qpu": true},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "GPU", "task": "Parallel RBF Kernel", "runtime": 0.00012, "energy": 0.037}, {"unit": "GPU", "task": "Neural Feature Extraction", "runtime": 0.00046, "energy": 0.142}, {"unit": "QPU", "task": "Quantum Kernel (120 circuits)", "runtime": 0.9184, "energy": 6612.20}], "accuracy": 0.625, "f1": 0.571, "runtime": 0.919, "energy": 6612.38},
+      "qaoa": {"steps": [{"unit": "GPU", "task": "Cost Hamiltonian (128x128)", "runtime": 0.0032, "energy": 0.969}, {"unit": "QPU", "task": "QAOA p=2 (45 circuits)", "runtime": 0.500, "energy": 3600.44}], "cut_value": 5.38, "approx_ratio": 0.769, "optimal_cut": 7, "runtime": 0.503, "energy": 3601.41},
+      "grover": {"steps": [{"unit": "GPU", "task": "Oracle Matrix Construction", "runtime": 0.00005, "energy": 0.014}, {"unit": "QPU", "task": "Grover (3 iterations)", "runtime": 0.0093, "energy": 66.88}], "success_prob": 0.962, "iterations": 3, "checks": 0, "runtime": 0.0093, "energy": 66.90}
+    },
+    "total_runtime": 1.432, "total_energy": 10280.68
+  },
+  "CPU+GPU+QPU": {
+    "units": {"cpu": true, "gpu": true, "qpu": true},
+    "experiments": {
+      "qsvm": {"steps": [{"unit": "CPU", "task": "Data Preprocessing", "runtime": 0.0022, "energy": 0.275}, {"unit": "CPU", "task": "Classical SVM (RBF)", "runtime": 0.0028, "energy": 0.354}, {"unit": "GPU", "task": "Parallel RBF Kernel", "runtime": 0.0001, "energy": 0.030}, {"unit": "GPU", "task": "Neural Feature Extraction", "runtime": 0.00044, "energy": 0.134}, {"unit": "QPU", "task": "Quantum Kernel (120 circuits)", "runtime": 0.9122, "energy": 6567.48}], "accuracy": 1.0, "f1": 1.0, "runtime": 0.918, "energy": 6568.27},
+      "qaoa": {"steps": [{"unit": "CPU", "task": "Graph Generation", "runtime": 0.00048, "energy": 0.061}, {"unit": "CPU", "task": "Greedy MaxCut", "runtime": 0.00001, "energy": 0.001}, {"unit": "GPU", "task": "Cost Hamiltonian (128x128)", "runtime": 0.0035, "energy": 1.068}, {"unit": "QPU", "task": "QAOA p=2 (39 circuits)", "runtime": 0.430, "energy": 3093.13}], "cut_value": 5.33, "approx_ratio": 0.761, "optimal_cut": 7, "runtime": 0.434, "energy": 3094.26},
+      "grover": {"steps": [{"unit": "CPU", "task": "Brute-Force Search", "runtime": 0.00001, "energy": 0.001}, {"unit": "GPU", "task": "Oracle Matrix Construction", "runtime": 0.00008, "energy": 0.026}, {"unit": "QPU", "task": "Grover (3 iterations)", "runtime": 0.0106, "energy": 76.25}], "success_prob": 0.967, "iterations": 3, "checks": 7, "runtime": 0.0107, "energy": 76.28}
+    },
+    "total_runtime": 1.362, "total_energy": 9738.82
+  }
+};
+
+let currentTask = 'all';
+let runHistory = [];
+
+// ── Get current combo key ─────────────────────────────────
+function getComboKey() {
+  const cpu = document.getElementById('cpu-toggle').checked;
+  const gpu = document.getElementById('gpu-toggle').checked;
+  const qpu = document.getElementById('qpu-toggle').checked;
+  const parts = [];
+  if (cpu) parts.push('CPU');
+  if (gpu) parts.push('GPU');
+  if (qpu) parts.push('QPU');
+  return parts.join('+') || '';
+}
+
+// ── Update combo label ────────────────────────────────────
+function updateComboLabel() {
+  const key = getComboKey();
+  const label = document.getElementById('combo-label');
+  const btn = document.getElementById('run-btn');
+  if (!key) {
+    label.textContent = 'No units selected';
+    label.style.borderColor = '#E8555A';
+    label.style.color = '#E8555A';
+    btn.disabled = true;
+  } else {
+    label.textContent = key.replace(/\+/g, ' + ');
+    label.style.borderColor = 'rgba(255,255,255,.2)';
+    label.style.color = '#e0e0f0';
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('cpu-toggle').addEventListener('change', updateComboLabel);
+document.getElementById('gpu-toggle').addEventListener('change', updateComboLabel);
+document.getElementById('qpu-toggle').addEventListener('change', updateComboLabel);
+
+// ── Select task ───────────────────────────────────────────
+function selectTask(task) {
+  currentTask = task;
+  document.querySelectorAll('.task-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.task-btn[data-task="${task}"]`).classList.add('active');
+  const key = getComboKey();
+  if (key && DATA[key]) renderResults(key);
+}
+
+// ── Run simulation ────────────────────────────────────────
+function runSimulation() {
+  const key = getComboKey();
+  if (!key || !DATA[key]) {
+    document.getElementById('no-selection').classList.remove('hidden');
+    document.getElementById('results-area').classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('no-selection').classList.add('hidden');
+  document.getElementById('results-area').classList.remove('hidden');
+
+  // Add to history
+  if (!runHistory.includes(key)) {
+    runHistory.push(key);
+    updateHistory();
+  }
+
+  renderResults(key);
+}
+
+// ── Render results ────────────────────────────────────────
+function renderResults(key) {
+  const data = DATA[key];
+  if (!data) return;
+
+  const tasks = currentTask === 'all' ? ['qsvm', 'qaoa', 'grover'] : [currentTask];
+  const taskNames = {qsvm: 'QSVM Anomaly Detection', qaoa: 'QAOA MaxCut Optimization', grover: 'Grover Cryptographic Search'};
+
+  // Summary cards
+  let cardsHtml = '';
+
+  // Total summary card
+  let totalRuntime = 0, totalEnergy = 0;
+  tasks.forEach(t => {
+    totalRuntime += data.experiments[t].runtime;
+    totalEnergy += data.experiments[t].energy;
+  });
+
+  cardsHtml += `<div class="result-card animate-in">
+    <h4><span style="color:#FFD700">&#9733;</span> Overall: ${key.replace(/\+/g, ' + ')}</h4>
+    <div class="metric-row"><span class="metric-label">Configuration</span><span class="metric-value">${key}</span></div>
+    <div class="metric-row"><span class="metric-label">Total Runtime</span><span class="metric-value ${totalRuntime < 0.01 ? 'good' : totalRuntime < 1 ? 'warn' : 'high'}">${formatTime(totalRuntime)}</span></div>
+    <div class="metric-row"><span class="metric-label">Total Energy</span><span class="metric-value ${totalEnergy < 5 ? 'good' : totalEnergy < 100 ? 'warn' : 'high'}">${formatEnergy(totalEnergy)}</span></div>
+    <div class="metric-row"><span class="metric-label">Total Steps</span><span class="metric-value">${tasks.reduce((s, t) => s + data.experiments[t].steps.length, 0)}</span></div>
+  </div>`;
+
+  tasks.forEach(t => {
+    const exp = data.experiments[t];
+    let metricsHtml = '';
+
+    if (t === 'qsvm') {
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Accuracy</span><span class="metric-value ${exp.accuracy >= 0.9 ? 'good' : exp.accuracy >= 0.7 ? 'warn' : 'high'}">${(exp.accuracy * 100).toFixed(1)}%</span></div>`;
+      metricsHtml += `<div class="metric-row"><span class="metric-label">F1 Score</span><span class="metric-value">${exp.f1.toFixed(3)}</span></div>`;
+    } else if (t === 'qaoa') {
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Cut Value</span><span class="metric-value">${exp.cut_value > 0 ? exp.cut_value.toFixed(2) : 'N/A'}</span></div>`;
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Approx Ratio</span><span class="metric-value ${exp.approx_ratio >= 0.8 ? 'good' : exp.approx_ratio >= 0.6 ? 'warn' : 'high'}">${exp.approx_ratio > 0 ? (exp.approx_ratio * 100).toFixed(1) + '%' : 'N/A'}</span></div>`;
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Optimal Cut</span><span class="metric-value">${exp.optimal_cut || 'N/A'}</span></div>`;
+    } else if (t === 'grover') {
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Success Prob</span><span class="metric-value ${exp.success_prob >= 0.9 ? 'good' : exp.success_prob >= 0.5 ? 'warn' : 'high'}">${exp.success_prob > 0 ? (exp.success_prob * 100).toFixed(1) + '%' : 'N/A'}</span></div>`;
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Iterations</span><span class="metric-value">${exp.iterations || 'N/A'}</span></div>`;
+      metricsHtml += `<div class="metric-row"><span class="metric-label">Classical Checks</span><span class="metric-value">${exp.checks || 'N/A'}</span></div>`;
+    }
+
+    metricsHtml += `<div class="metric-row"><span class="metric-label">Runtime</span><span class="metric-value">${formatTime(exp.runtime)}</span></div>`;
+    metricsHtml += `<div class="metric-row"><span class="metric-label">Energy</span><span class="metric-value">${formatEnergy(exp.energy)}</span></div>`;
+    metricsHtml += `<div class="metric-row"><span class="metric-label">Steps</span><span class="metric-value">${exp.steps.length}</span></div>`;
+
+    cardsHtml += `<div class="result-card animate-in">
+      <h4>${taskNames[t]}</h4>
+      ${metricsHtml}
+    </div>`;
+  });
+
+  document.getElementById('summary-cards').innerHTML = cardsHtml;
+
+  // Pipeline steps
+  let stepsHtml = '';
+  tasks.forEach(t => {
+    stepsHtml += `<div style="color:#4DD9D9;font-weight:700;font-size:.85rem;padding:.3rem 0">${taskNames[t]}</div>`;
+    data.experiments[t].steps.forEach((step, i) => {
+      const pct = Math.max(5, Math.min(100, (step.runtime / totalRuntime) * 100));
+      stepsHtml += `<div class="step animate-in" style="animation-delay:${i * 0.05}s">
+        <span class="unit-badge ${step.unit}">${step.unit}</span>
+        <span class="task-name">${step.task}</span>
+        <span class="step-runtime">${formatTime(step.runtime)}</span>
+        <span class="step-energy">${formatEnergy(step.energy)}</span>
+      </div>`;
+    });
+  });
+  document.getElementById('pipeline-steps').innerHTML = stepsHtml;
+
+  // Runtime bars per unit
+  const unitRuntimes = {CPU: 0, GPU: 0, QPU: 0};
+  const unitEnergies = {CPU: 0, GPU: 0, QPU: 0};
+  tasks.forEach(t => {
+    data.experiments[t].steps.forEach(s => {
+      unitRuntimes[s.unit] += s.runtime;
+      unitEnergies[s.unit] += s.energy;
+    });
+  });
+
+  const maxRuntime = Math.max(...Object.values(unitRuntimes), 0.0001);
+  const maxEnergy = Math.max(...Object.values(unitEnergies), 0.0001);
+
+  let runtimeBarsHtml = '';
+  let energyBarsHtml = '';
+  ['CPU', 'GPU', 'QPU'].forEach(u => {
+    const rPct = (unitRuntimes[u] / maxRuntime * 100).toFixed(1);
+    const ePct = (unitEnergies[u] / maxEnergy * 100).toFixed(1);
+    runtimeBarsHtml += `<div class="chart-row">
+      <span class="chart-label">${u}</span>
+      <div class="chart-bar-bg"><div class="chart-bar ${u.toLowerCase()}" style="width:${Math.max(rPct, 2)}%">${formatTime(unitRuntimes[u])}</div></div>
+    </div>`;
+    energyBarsHtml += `<div class="chart-row">
+      <span class="chart-label">${u}</span>
+      <div class="chart-bar-bg"><div class="chart-bar ${u.toLowerCase()}" style="width:${Math.max(ePct, 2)}%">${formatEnergy(unitEnergies[u])}</div></div>
+    </div>`;
+  });
+  document.getElementById('runtime-bars').innerHTML = runtimeBarsHtml;
+  document.getElementById('energy-bars').innerHTML = energyBarsHtml;
+
+  // Comparison table
+  renderCompareTable(tasks, taskNames);
+}
+
+// ── Comparison table across all combos ────────────────────
+function renderCompareTable(tasks, taskNames) {
+  const combos = Object.keys(DATA);
+
+  let html = '<thead><tr><th>Config</th>';
+  tasks.forEach(t => {
+    if (t === 'qsvm') html += '<th>QSVM Acc</th>';
+    else if (t === 'qaoa') html += '<th>QAOA Ratio</th>';
+    else if (t === 'grover') html += '<th>Grover P(s)</th>';
+  });
+  html += '<th>Runtime</th><th>Energy</th></tr></thead><tbody>';
+
+  // Find best values
+  let bestRuntime = Infinity, bestEnergy = Infinity;
+  combos.forEach(c => {
+    let rt = 0, en = 0;
+    tasks.forEach(t => { rt += DATA[c].experiments[t].runtime; en += DATA[c].experiments[t].energy; });
+    if (rt < bestRuntime) bestRuntime = rt;
+    if (en < bestEnergy) bestEnergy = en;
+  });
+
+  combos.forEach(c => {
+    const d = DATA[c];
+    let rt = 0, en = 0;
+    tasks.forEach(t => { rt += d.experiments[t].runtime; en += d.experiments[t].energy; });
+
+    const isCurrentCombo = c === getComboKey();
+    html += `<tr style="${isCurrentCombo ? 'background:rgba(100,180,255,.08)' : ''}">`;
+    html += `<td style="font-weight:${isCurrentCombo ? '700' : '400'};color:${isCurrentCombo ? '#64b5f6' : '#e0e0f0'}">${c}</td>`;
+
+    tasks.forEach(t => {
+      const exp = d.experiments[t];
+      if (t === 'qsvm') {
+        const val = exp.accuracy;
+        html += `<td class="${val >= 0.95 ? 'highlight' : ''}">${(val * 100).toFixed(1)}%</td>`;
+      } else if (t === 'qaoa') {
+        const val = exp.approx_ratio;
+        html += `<td class="${val >= 0.9 ? 'highlight' : ''}">${val > 0 ? (val * 100).toFixed(1) + '%' : 'N/A'}</td>`;
+      } else if (t === 'grover') {
+        const val = exp.success_prob;
+        html += `<td class="${val >= 0.9 ? 'highlight' : ''}">${val > 0 ? (val * 100).toFixed(1) + '%' : 'N/A'}</td>`;
+      }
+    });
+
+    html += `<td class="${Math.abs(rt - bestRuntime) < 0.001 ? 'highlight' : ''}">${formatTime(rt)}</td>`;
+    html += `<td class="${Math.abs(en - bestEnergy) < 0.01 ? 'highlight' : ''}">${formatEnergy(en)}</td>`;
+    html += '</tr>';
+  });
+
+  html += '</tbody>';
+  document.getElementById('compare-table').innerHTML = html;
+}
+
+// ── History ───────────────────────────────────────────────
+function updateHistory() {
+  const container = document.getElementById('history-items');
+  if (runHistory.length === 0) {
+    container.innerHTML = '<span style="color:#7a8ba8;font-size:.85rem">No runs yet.</span>';
+    return;
+  }
+  container.innerHTML = runHistory.map((h, i) => {
+    const d = DATA[h];
+    return `<div class="history-chip" onclick="loadFromHistory('${h}')">
+      <strong>${h}</strong> | ${formatTime(d.total_runtime)} | ${formatEnergy(d.total_energy)}
+      <span class="x" onclick="event.stopPropagation();removeHistory(${i})">&#10005;</span>
+    </div>`;
+  }).join('');
+}
+
+function loadFromHistory(key) {
+  const units = DATA[key].units;
+  document.getElementById('cpu-toggle').checked = units.cpu;
+  document.getElementById('gpu-toggle').checked = units.gpu;
+  document.getElementById('qpu-toggle').checked = units.qpu;
+  updateComboLabel();
+  runSimulation();
+}
+
+function removeHistory(idx) {
+  runHistory.splice(idx, 1);
+  updateHistory();
+}
+
+// ── Formatters ────────────────────────────────────────────
+function formatTime(s) {
+  if (s < 0.001) return (s * 1e6).toFixed(1) + ' us';
+  if (s < 1) return (s * 1000).toFixed(2) + ' ms';
+  return s.toFixed(3) + ' s';
+}
+
+function formatEnergy(j) {
+  if (j < 0.01) return (j * 1000).toFixed(2) + ' mJ';
+  if (j < 100) return j.toFixed(2) + ' J';
+  if (j < 10000) return (j / 1000).toFixed(2) + ' kJ';
+  return (j / 1000).toFixed(1) + ' kJ';
+}
+
+// Initialize
+updateComboLabel();
+</script>
+</body>
+</html>

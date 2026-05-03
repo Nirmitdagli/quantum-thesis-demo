@@ -1,0 +1,7 @@
+experiment,algorithm,backend,qubits,shots,metric_primary,metric_secondary,runtime_seconds,energy_low,energy_high,timestamp
+QSVM,Quantum SVM,statevector,4,0,1.000000,1.000000,28.788869,172733.21,863666.07,2026-03-06T11:59:42.706324
+QSVM,Classical SVM,sklearn,4,0,1.000000,1.000000,0.007390,44.34,221.70,2026-03-06T11:59:42.706986
+QAOA,QAOA Quantum,aer_simulator,7,2000,6.180000,0.882857,8.069913,48419.48,242097.38,2026-03-06T11:59:51.182399
+QAOA,Greedy Classical,classical,7,0,6.000000,0.857143,0.000047,0.28,1.42,2026-03-06T11:59:51.183096
+Grover,Grover Quantum,aer_simulator,4,2000,0.963500,0.000000,0.115234,691.41,3457.03,2026-03-06T11:59:55.558334
+Grover,Brute-Force Classical,classical,4,0,1.000000,0.000000,0.000007,0.04,0.22,2026-03-06T11:59:55.558870

@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+~$*.docx
+*.tmp
+hybrid_simulation/output/run_log*.txt
+hybrid_simulation/output/simulator_data.json

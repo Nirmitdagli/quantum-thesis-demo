@@ -1,0 +1,5 @@
+dataset,samples,features,normal,attack,attack_ratio,fallback,notes
+TON_IoT,20000,40,10000,10000,0.5,False,Loaded TON_IoT network data from data/ton_iot/train_test_network.csv
+NSL-KDD,7000,41,3500,3500,0.5,False,Train=data/nsl_kdd/KDDTrain+.txt; test=data/nsl_kdd/KDDTest+.txt
+CICIDS2017,40000,78,25818,14182,0.35455,False,"Loaded 8 CICIDS files from data/cicids2017/machine_learning: Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv.parquet, Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv.parquet, Friday-WorkingHours-Morning.pcap_ISCX.csv.parquet, Monday-WorkingHours.pcap_ISCX.csv.parquet, Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv.parquet, Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv.parquet, Tuesday-WorkingHours.pcap_ISCX.csv.parquet, Wednesday-workingHours.pcap_ISCX.csv.parquet"
+IoT-23,10035,15,7200,2835,0.2825112107623318,False,Loaded 4 IoT-23 labeled Zeek logs from data/iot23

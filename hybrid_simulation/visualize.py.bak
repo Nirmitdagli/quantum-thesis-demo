@@ -1,0 +1,609 @@
+"""Generate visualization plots for the hybrid CPU+GPU+QPU simulation."""
+
+import os
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import FancyBboxPatch
+from typing import Dict, Any, List
+
+
+# ── Color palette (matches thesis website) ───────────────────
+C = {
+    "bg":     "#141E33",
+    "card":   "#1E2D52",
+    "card2":  "#243562",
+    "blue":   "#4C9BE8",
+    "purple": "#9C6ADE",
+    "green":  "#50C878",
+    "orange": "#F0963C",
+    "red":    "#E8555A",
+    "cyan":   "#4DD9D9",
+    "white":  "#E8ECF4",
+    "gray":   "#7A8BA8",
+    "gold":   "#FFD700",
+}
+
+UNIT_COLORS = {"CPU": C["blue"], "GPU": C["green"], "QPU": C["purple"]}
+
+
+def generate_all_plots(results: Dict[str, Any], output_dir: str):
+    """Generate all hybrid simulation visualizations."""
+    os.makedirs(output_dir, exist_ok=True)
+
+    plot_pipeline_timeline(results, output_dir)
+    plot_unit_utilization(results, output_dir)
+    plot_energy_breakdown(results, output_dir)
+    plot_experiment_comparison(results, output_dir)
+    plot_hybrid_architecture_live(results, output_dir)
+    plot_hybrid_dashboard(results, output_dir)
+
+    print(f"\n  All hybrid plots saved to: {output_dir}")
+
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT 1: Pipeline Timeline (Gantt-style)
+# ═══════════════════════════════════════════════════════════════
+
+def plot_pipeline_timeline(results: Dict, output_dir: str):
+    """Gantt chart showing when each unit was active."""
+    log = results["pipeline_log"]
+    fig, ax = plt.subplots(figsize=(16, 8))
+    fig.patch.set_facecolor(C["bg"])
+    ax.set_facecolor(C["bg"])
+
+    experiments = ["QSVM", "QAOA", "Grover"]
+    y_positions = {"QSVM": 3, "QAOA": 2, "Grover": 1}
+
+    cumulative_time = {"QSVM": 0, "QAOA": 0, "Grover": 0}
+
+    for entry in log:
+        exp = entry["experiment"]
+        unit = entry["unit"]
+        runtime = entry["runtime"]
+        start = cumulative_time[exp]
+
+        color = UNIT_COLORS.get(unit, C["gray"])
+        y = y_positions[exp]
+
+        ax.barh(y, runtime, left=start, height=0.5, color=color,
+                edgecolor="white", linewidth=0.5, alpha=0.85)
+
+        # Label if wide enough
+        if runtime > 0.05:
+            ax.text(start + runtime / 2, y, entry["task"],
+                    ha="center", va="center", fontsize=7,
+                    color="white", fontweight="bold")
+
+        cumulative_time[exp] += runtime
+
+    ax.set_yticks([1, 2, 3])
+    ax.set_yticklabels(["Grover", "QAOA", "QSVM"], color=C["white"],
+                       fontsize=12, fontweight="bold")
+    ax.set_xlabel("Time (seconds)", color=C["white"], fontsize=12)
+    ax.set_title("Hybrid Pipeline Timeline — Task Execution per Unit",
+                 color=C["white"], fontsize=14, fontweight="bold", pad=15)
+
+    # Legend
+    handles = [mpatches.Patch(color=UNIT_COLORS[u], label=u)
+               for u in ["CPU", "GPU", "QPU"]]
+    ax.legend(handles=handles, loc="upper right", fontsize=10,
+              facecolor=C["card"], edgecolor=C["gray"], labelcolor=C["white"])
+
+    ax.tick_params(colors=C["gray"])
+    ax.grid(axis="x", alpha=0.15)
+    for spine in ax.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "hybrid_pipeline_timeline.png"),
+                dpi=150, bbox_inches="tight", facecolor=C["bg"])
+    plt.close()
+
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT 2: Unit Utilization Pie + Bar
+# ═══════════════════════════════════════════════════════════════
+
+def plot_unit_utilization(results: Dict, output_dir: str):
+    """Pie chart of time spent on each unit + bar chart of task counts."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig.patch.set_facecolor(C["bg"])
+
+    units = ["CPU", "GPU", "QPU"]
+    times = [results["unit_totals"][u] for u in units]
+    counts = [results["task_count"][u] for u in units]
+    colors = [UNIT_COLORS[u] for u in units]
+
+    # Pie chart
+    ax1.set_facecolor(C["bg"])
+    wedges, texts, autotexts = ax1.pie(
+        times, labels=units, colors=colors, autopct="%1.1f%%",
+        startangle=90, textprops={"color": C["white"], "fontweight": "bold"},
+        wedgeprops={"edgecolor": C["bg"], "linewidth": 2})
+    for t in autotexts:
+        t.set_fontsize(11)
+        t.set_color("white")
+    ax1.set_title("Runtime Distribution by Unit",
+                  color=C["white"], fontsize=13, fontweight="bold")
+
+    # Bar chart
+    ax2.set_facecolor(C["bg"])
+    bars = ax2.bar(units, counts, color=colors, edgecolor="white",
+                   linewidth=1, alpha=0.85, width=0.5)
+    for bar, count, t in zip(bars, counts, times):
+        ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2,
+                 f"{count} tasks\n{t:.3f}s",
+                 ha="center", va="bottom", color=C["white"],
+                 fontsize=10, fontweight="bold")
+    ax2.set_ylabel("Number of Tasks", color=C["white"], fontsize=11)
+    ax2.set_title("Tasks Executed per Unit",
+                  color=C["white"], fontsize=13, fontweight="bold")
+    ax2.tick_params(colors=C["gray"])
+    for spine in ax2.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+    ax2.set_xticklabels(units, color=C["white"], fontsize=12)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "hybrid_unit_utilization.png"),
+                dpi=150, bbox_inches="tight", facecolor=C["bg"])
+    plt.close()
+
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT 3: Energy Breakdown
+# ═══════════════════════════════════════════════════════════════
+
+def plot_energy_breakdown(results: Dict, output_dir: str):
+    """Stacked bar chart of energy per experiment per unit."""
+    fig, ax = plt.subplots(figsize=(12, 7))
+    fig.patch.set_facecolor(C["bg"])
+    ax.set_facecolor(C["bg"])
+
+    experiments = ["QSVM", "QAOA", "Grover"]
+    log = results["pipeline_log"]
+
+    cpu_energy = []
+    gpu_energy = []
+    qpu_energy = []
+
+    for exp in experiments:
+        exp_log = [e for e in log if e["experiment"] == exp]
+        cpu_energy.append(sum(e["energy_j"] for e in exp_log if e["unit"] == "CPU"))
+        gpu_energy.append(sum(e["energy_j"] for e in exp_log if e["unit"] == "GPU"))
+        qpu_energy.append(sum(e["energy_j"] for e in exp_log if e["unit"] == "QPU"))
+
+    x = np.arange(len(experiments))
+    width = 0.5
+
+    ax.bar(x, cpu_energy, width, label="CPU", color=C["blue"], alpha=0.85)
+    ax.bar(x, gpu_energy, width, bottom=cpu_energy, label="GPU",
+           color=C["green"], alpha=0.85)
+    bottoms = [c + g for c, g in zip(cpu_energy, gpu_energy)]
+    ax.bar(x, qpu_energy, width, bottom=bottoms, label="QPU",
+           color=C["purple"], alpha=0.85)
+
+    # Total labels
+    for i, (c, g, q) in enumerate(zip(cpu_energy, gpu_energy, qpu_energy)):
+        total = c + g + q
+        ax.text(i, total + total * 0.02, f"{total:.1f} J",
+                ha="center", va="bottom", color=C["white"],
+                fontsize=10, fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(experiments, color=C["white"], fontsize=12)
+    ax.set_ylabel("Energy (Joules)", color=C["white"], fontsize=11)
+    ax.set_title("Energy Consumption by Experiment and Processing Unit",
+                 color=C["white"], fontsize=14, fontweight="bold", pad=15)
+    ax.legend(fontsize=10, facecolor=C["card"], edgecolor=C["gray"],
+              labelcolor=C["white"])
+    ax.tick_params(colors=C["gray"])
+    ax.grid(axis="y", alpha=0.15)
+    for spine in ax.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "hybrid_energy_breakdown.png"),
+                dpi=150, bbox_inches="tight", facecolor=C["bg"])
+    plt.close()
+
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT 4: Experiment Comparison
+# ═══════════════════════════════════════════════════════════════
+
+def plot_experiment_comparison(results: Dict, output_dir: str):
+    """Side-by-side classical vs quantum results for all three experiments."""
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig.patch.set_facecolor(C["bg"])
+    fig.suptitle("Hybrid Pipeline Results: Classical vs Quantum",
+                 color=C["white"], fontsize=15, fontweight="bold", y=1.02)
+
+    # QSVM
+    ax = axes[0]
+    ax.set_facecolor(C["bg"])
+    qc = results["qsvm"]["comparison"]
+    metrics = ["Accuracy", "F1 Score"]
+    classical = [qc["classical_accuracy"], qc["classical_f1"]]
+    quantum = [qc["quantum_accuracy"], qc["quantum_f1"]]
+    x = np.arange(len(metrics))
+    w = 0.3
+    ax.bar(x - w/2, classical, w, color=C["orange"], label="Classical (CPU)",
+           alpha=0.85)
+    ax.bar(x + w/2, quantum, w, color=C["purple"], label="Quantum (QPU)",
+           alpha=0.85)
+    ax.set_xticks(x)
+    ax.set_xticklabels(metrics, color=C["white"])
+    ax.set_ylim(0, 1.15)
+    ax.set_title("QSVM Anomaly Detection", color=C["cyan"], fontsize=12,
+                 fontweight="bold")
+    ax.legend(fontsize=8, facecolor=C["card"], edgecolor=C["gray"],
+              labelcolor=C["white"])
+    ax.tick_params(colors=C["gray"])
+    for spine in ax.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # QAOA
+    ax = axes[1]
+    ax.set_facecolor(C["bg"])
+    qc2 = results["qaoa"]["comparison"]
+    labels = ["Cut Value", "Approx Ratio"]
+    classical2 = [qc2["greedy_cut"], qc2["greedy_ratio"]]
+    quantum2 = [qc2["qaoa_cut"], qc2["qaoa_ratio"]]
+    optimal = [qc2["optimal_cut"], 1.0]
+    x = np.arange(len(labels))
+    ax.bar(x - w, classical2, w, color=C["orange"], label="Greedy (CPU)",
+           alpha=0.85)
+    ax.bar(x, quantum2, w, color=C["purple"], label="QAOA (QPU)", alpha=0.85)
+    ax.bar(x + w, optimal, w, color=C["gold"], label="Optimal", alpha=0.5)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, color=C["white"])
+    ax.set_title("QAOA MaxCut", color=C["cyan"], fontsize=12,
+                 fontweight="bold")
+    ax.legend(fontsize=8, facecolor=C["card"], edgecolor=C["gray"],
+              labelcolor=C["white"])
+    ax.tick_params(colors=C["gray"])
+    for spine in ax.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # Grover
+    ax = axes[2]
+    ax.set_facecolor(C["bg"])
+    qc3 = results["grover"]["comparison"]
+    labels3 = ["Iterations/Checks", "Speedup"]
+    classical3 = [qc3["classical_checks"], 1]
+    quantum3 = [qc3["quantum_iterations"], qc3["speedup_factor"]]
+    x = np.arange(len(labels3))
+    ax.bar(x - w/2, classical3, w, color=C["orange"],
+           label="Brute Force (CPU)", alpha=0.85)
+    ax.bar(x + w/2, quantum3, w, color=C["purple"],
+           label="Grover (QPU)", alpha=0.85)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels3, color=C["white"])
+    ax.set_title("Grover Search", color=C["cyan"], fontsize=12,
+                 fontweight="bold")
+    ax.legend(fontsize=8, facecolor=C["card"], edgecolor=C["gray"],
+              labelcolor=C["white"])
+    ax.tick_params(colors=C["gray"])
+    for spine in ax.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "hybrid_experiment_comparison.png"),
+                dpi=150, bbox_inches="tight", facecolor=C["bg"])
+    plt.close()
+
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT 5: Live Architecture Diagram (with data flow arrows)
+# ═══════════════════════════════════════════════════════════════
+
+def plot_hybrid_architecture_live(results: Dict, output_dir: str):
+    """Architecture diagram annotated with actual runtime/energy data."""
+    fig, ax = plt.subplots(figsize=(16, 11))
+    fig.patch.set_facecolor(C["bg"])
+    ax.set_facecolor(C["bg"])
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 12)
+    ax.set_aspect("equal")
+    ax.axis("off")
+
+    def box(x, y, w, h, label, color, sub=None, fontsize=11):
+        rect = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.15",
+                               facecolor=color, edgecolor="white",
+                               linewidth=1.5, alpha=0.85)
+        ax.add_patch(rect)
+        if sub:
+            ax.text(x + w/2, y + h/2 + 0.18, label, ha="center",
+                    va="center", fontsize=fontsize, fontweight="bold",
+                    color="white")
+            ax.text(x + w/2, y + h/2 - 0.18, sub, ha="center",
+                    va="center", fontsize=fontsize - 2, color=C["gray"])
+        else:
+            ax.text(x + w/2, y + h/2, label, ha="center", va="center",
+                    fontsize=fontsize, fontweight="bold", color="white")
+
+    def arrow(x1, y1, x2, y2, color="white", lw=1.5):
+        ax.annotate("", xy=(x2, y2), xytext=(x1, y1),
+                    arrowprops=dict(arrowstyle="->", color=color, lw=lw))
+
+    # Title
+    ax.text(6, 11.5, "Hybrid CPU + GPU + QPU — Live Simulation Results",
+            ha="center", va="center", fontsize=16, fontweight="bold",
+            color=C["white"])
+
+    # Workloads
+    ax.text(6, 10.8, "Cybersecurity AI Workloads", ha="center",
+            fontsize=11, fontweight="bold", color=C["cyan"])
+    box(0.5, 9.8, 3.2, 0.8, "Anomaly Detection", C["card2"],
+        sub="QSVM Pipeline")
+    box(4.4, 9.8, 3.2, 0.8, "Network Optimization", C["card2"],
+        sub="QAOA Pipeline")
+    box(8.3, 9.8, 3.2, 0.8, "Crypto Search", C["card2"],
+        sub="Grover Pipeline")
+
+    # Orchestrator
+    box(2, 8.3, 8, 0.9, "Hybrid Orchestrator",
+        C["card2"], sub="Job Router  |  Circuit Compiler  |  Pipeline Coordinator")
+    arrow(2.1, 9.8, 4, 9.25, C["cyan"])
+    arrow(6, 9.8, 6, 9.25, C["cyan"])
+    arrow(9.9, 9.8, 8, 9.25, C["cyan"])
+
+    # Compute units with REAL data
+    ax.text(6, 7.7, "Hybrid Compute Layer", ha="center", fontsize=12,
+            fontweight="bold", color=C["gold"])
+
+    cpu_t = results["unit_totals"]["CPU"]
+    gpu_t = results["unit_totals"]["GPU"]
+    qpu_t = results["unit_totals"]["QPU"]
+    cpu_e = results["energy_totals"]["CPU"]
+    gpu_e = results["energy_totals"]["GPU"]
+    qpu_e = results["energy_totals"]["QPU"]
+
+    box(0.3, 5.5, 3.4, 1.8, "CPU", C["blue"],
+        sub=f"{cpu_t:.4f}s | {cpu_e:.1f}J", fontsize=16)
+    box(4.3, 5.5, 3.4, 1.8, "GPU", C["green"],
+        sub=f"{gpu_t:.4f}s | {gpu_e:.1f}J", fontsize=16)
+    box(8.3, 5.5, 3.4, 1.8, "QPU", C["purple"],
+        sub=f"{qpu_t:.4f}s | {qpu_e:.1f}J", fontsize=16)
+
+    # Sub-labels for each unit
+    ax.text(2, 5.3, "Control | Preprocess | Classical",
+            ha="center", fontsize=8, color=C["gray"])
+    ax.text(6, 5.3, "Kernels | Matrix Ops | Neural Net",
+            ha="center", fontsize=8, color=C["gray"])
+    ax.text(10, 5.3, "ZZ Kernel | QAOA | Grover",
+            ha="center", fontsize=8, color=C["gray"])
+
+    arrow(4, 8.3, 2, 7.35, C["blue"], lw=2)
+    arrow(6, 8.3, 6, 7.35, C["green"], lw=2)
+    arrow(8, 8.3, 10, 7.35, C["purple"], lw=2)
+
+    # Interconnects
+    ax.annotate("", xy=(4.3, 6.4), xytext=(3.7, 6.4),
+                arrowprops=dict(arrowstyle="<->", color=C["gold"], lw=2))
+    ax.annotate("", xy=(8.3, 6.4), xytext=(7.7, 6.4),
+                arrowprops=dict(arrowstyle="<->", color=C["gold"], lw=2))
+    ax.text(4, 6.7, "PCIe", ha="center", fontsize=7, color=C["gold"])
+    ax.text(8, 6.7, "Cloud API", ha="center", fontsize=7, color=C["gold"])
+
+    # Results layer
+    total_t = results["total_time"]
+    total_e = sum(results["energy_totals"].values())
+    box(2, 3.5, 8, 1.2, "Unified Results", C["green"],
+        sub=f"Total: {total_t:.2f}s | {total_e:.1f}J | {sum(results['task_count'].values())} tasks",
+        fontsize=13)
+    arrow(2, 5.5, 4, 4.75, C["blue"])
+    arrow(6, 5.5, 6, 4.75, C["green"])
+    arrow(10, 5.5, 8, 4.75, C["purple"])
+
+    # Results boxes
+    qc = results["qsvm"]["comparison"]
+    qc2 = results["qaoa"]["comparison"]
+    qc3 = results["grover"]["comparison"]
+
+    box(0.5, 1.8, 3.2, 1.2, "QSVM Result", C["card2"],
+        sub=f"Acc: {qc['classical_accuracy']:.0%} / {qc['quantum_accuracy']:.0%}")
+    box(4.4, 1.8, 3.2, 1.2, "QAOA Result", C["card2"],
+        sub=f"Cut: {qc2['greedy_cut']} / {qc2['qaoa_cut']:.1f}")
+    box(8.3, 1.8, 3.2, 1.2, "Grover Result", C["card2"],
+        sub=f"P(success): {qc3['quantum_success_prob']:.1%}")
+
+    arrow(4, 3.5, 2.1, 3.05, C["green"])
+    arrow(6, 3.5, 6, 3.05, C["green"])
+    arrow(8, 3.5, 9.9, 3.05, C["green"])
+
+    # Footer
+    ax.text(6, 1.1, "Hybrid CPU+GPU+QPU Simulation — Cybersecurity Thesis Demo",
+            ha="center", fontsize=10, color=C["gray"], style="italic")
+    ax.text(6, 0.6, f"Pipeline: {len(results['pipeline_log'])} steps | "
+            f"CPU: {results['task_count']['CPU']} tasks | "
+            f"GPU: {results['task_count']['GPU']} tasks | "
+            f"QPU: {results['task_count']['QPU']} tasks",
+            ha="center", fontsize=9, color=C["gray"])
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, "hybrid_architecture_live.png"),
+                dpi=150, bbox_inches="tight", facecolor=C["bg"])
+    plt.close()
+
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT 6: Full Dashboard
+# ═══════════════════════════════════════════════════════════════
+
+def plot_hybrid_dashboard(results: Dict, output_dir: str):
+    """Full summary dashboard combining all metrics."""
+    fig = plt.figure(figsize=(20, 14))
+    fig.patch.set_facecolor(C["bg"])
+    fig.suptitle("HYBRID CPU + GPU + QPU SIMULATION DASHBOARD",
+                 fontsize=18, fontweight="bold", color=C["white"], y=0.98)
+
+    gs = fig.add_gridspec(3, 3, hspace=0.35, wspace=0.3)
+
+    # ── Top row: Unit metrics ─────────────────────────────────
+    # Runtime per unit (horizontal bar)
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.set_facecolor(C["bg"])
+    units = ["CPU", "GPU", "QPU"]
+    times = [results["unit_totals"][u] for u in units]
+    colors = [UNIT_COLORS[u] for u in units]
+    bars = ax1.barh(units, times, color=colors, alpha=0.85, height=0.5)
+    for bar, t in zip(bars, times):
+        ax1.text(bar.get_width() + max(times) * 0.02,
+                 bar.get_y() + bar.get_height() / 2,
+                 f"{t:.4f}s", va="center", color=C["white"],
+                 fontsize=10, fontweight="bold")
+    ax1.set_title("Runtime by Unit", color=C["cyan"], fontsize=12,
+                  fontweight="bold")
+    ax1.tick_params(colors=C["gray"])
+    ax1.set_yticklabels(units, color=C["white"], fontsize=11)
+    for spine in ax1.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # Energy per unit (horizontal bar)
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.set_facecolor(C["bg"])
+    energies = [results["energy_totals"][u] for u in units]
+    bars = ax2.barh(units, energies, color=colors, alpha=0.85, height=0.5)
+    for bar, e in zip(bars, energies):
+        ax2.text(bar.get_width() + max(energies) * 0.02,
+                 bar.get_y() + bar.get_height() / 2,
+                 f"{e:.1f}J", va="center", color=C["white"],
+                 fontsize=10, fontweight="bold")
+    ax2.set_title("Energy by Unit", color=C["cyan"], fontsize=12,
+                  fontweight="bold")
+    ax2.tick_params(colors=C["gray"])
+    ax2.set_yticklabels(units, color=C["white"], fontsize=11)
+    for spine in ax2.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # Task count per unit (pie)
+    ax3 = fig.add_subplot(gs[0, 2])
+    ax3.set_facecolor(C["bg"])
+    counts = [results["task_count"][u] for u in units]
+    ax3.pie(counts, labels=units, colors=colors, autopct="%1.0f%%",
+            textprops={"color": C["white"], "fontweight": "bold"},
+            wedgeprops={"edgecolor": C["bg"], "linewidth": 2})
+    ax3.set_title("Task Distribution", color=C["cyan"], fontsize=12,
+                  fontweight="bold")
+
+    # ── Middle row: Experiment results ────────────────────────
+    # QSVM
+    ax4 = fig.add_subplot(gs[1, 0])
+    ax4.set_facecolor(C["bg"])
+    qc = results["qsvm"]["comparison"]
+    labels = ["Accuracy", "F1"]
+    cl = [qc["classical_accuracy"], qc["classical_f1"]]
+    qu = [qc["quantum_accuracy"], qc["quantum_f1"]]
+    x = np.arange(len(labels))
+    w = 0.3
+    ax4.bar(x - w/2, cl, w, color=C["orange"], label="Classical", alpha=0.85)
+    ax4.bar(x + w/2, qu, w, color=C["purple"], label="Quantum", alpha=0.85)
+    ax4.set_xticks(x)
+    ax4.set_xticklabels(labels, color=C["white"])
+    ax4.set_ylim(0, 1.2)
+    ax4.set_title("QSVM: Anomaly Detection", color=C["cyan"], fontsize=12,
+                  fontweight="bold")
+    ax4.legend(fontsize=8, facecolor=C["card"], edgecolor=C["gray"],
+               labelcolor=C["white"])
+    ax4.tick_params(colors=C["gray"])
+    for spine in ax4.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # QAOA
+    ax5 = fig.add_subplot(gs[1, 1])
+    ax5.set_facecolor(C["bg"])
+    qc2 = results["qaoa"]["comparison"]
+    labels2 = ["Greedy", "QAOA", "Optimal"]
+    vals = [qc2["greedy_cut"], qc2["qaoa_cut"], qc2["optimal_cut"]]
+    cols = [C["orange"], C["purple"], C["gold"]]
+    bars = ax5.bar(labels2, vals, color=cols, alpha=0.85, width=0.5)
+    for bar, v in zip(bars, vals):
+        ax5.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.1,
+                 f"{v:.1f}", ha="center", color=C["white"], fontsize=10,
+                 fontweight="bold")
+    ax5.set_title("QAOA: MaxCut Value", color=C["cyan"], fontsize=12,
+                  fontweight="bold")
+    ax5.set_xticklabels(labels2, color=C["white"])
+    ax5.tick_params(colors=C["gray"])
+    for spine in ax5.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # Grover
+    ax6 = fig.add_subplot(gs[1, 2])
+    ax6.set_facecolor(C["bg"])
+    qc3 = results["grover"]["comparison"]
+    labels3 = ["Classical\nChecks", "Grover\nIterations"]
+    vals3 = [qc3["classical_checks"], qc3["quantum_iterations"]]
+    cols3 = [C["orange"], C["purple"]]
+    bars = ax6.bar(labels3, vals3, color=cols3, alpha=0.85, width=0.5)
+    for bar, v in zip(bars, vals3):
+        ax6.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2,
+                 str(v), ha="center", color=C["white"], fontsize=12,
+                 fontweight="bold")
+    ax6.set_title(f"Grover: {qc3['speedup_factor']:.1f}x Speedup",
+                  color=C["cyan"], fontsize=12, fontweight="bold")
+    ax6.set_xticklabels(labels3, color=C["white"])
+    ax6.tick_params(colors=C["gray"])
+    for spine in ax6.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    # ── Bottom row: Pipeline timeline ─────────────────────────
+    ax7 = fig.add_subplot(gs[2, :])
+    ax7.set_facecolor(C["bg"])
+
+    log = results["pipeline_log"]
+    experiments = ["QSVM", "QAOA", "Grover"]
+    y_positions = {"QSVM": 3, "QAOA": 2, "Grover": 1}
+    cumulative_time = {"QSVM": 0, "QAOA": 0, "Grover": 0}
+
+    for entry in log:
+        exp = entry["experiment"]
+        unit = entry["unit"]
+        runtime = entry["runtime"]
+        start = cumulative_time[exp]
+        color = UNIT_COLORS.get(unit, C["gray"])
+        y = y_positions[exp]
+
+        ax7.barh(y, runtime, left=start, height=0.5, color=color,
+                 edgecolor="white", linewidth=0.5, alpha=0.85)
+        if runtime > 0.05:
+            ax7.text(start + runtime / 2, y, entry["task"][:15],
+                     ha="center", va="center", fontsize=6,
+                     color="white", fontweight="bold")
+        cumulative_time[exp] += runtime
+
+    ax7.set_yticks([1, 2, 3])
+    ax7.set_yticklabels(["Grover", "QAOA", "QSVM"], color=C["white"],
+                        fontsize=11)
+    ax7.set_xlabel("Time (seconds)", color=C["white"], fontsize=11)
+    ax7.set_title("Pipeline Execution Timeline",
+                  color=C["white"], fontsize=13, fontweight="bold")
+
+    handles = [mpatches.Patch(color=UNIT_COLORS[u], label=u)
+               for u in ["CPU", "GPU", "QPU"]]
+    ax7.legend(handles=handles, loc="upper right", fontsize=9,
+               facecolor=C["card"], edgecolor=C["gray"], labelcolor=C["white"])
+    ax7.tick_params(colors=C["gray"])
+    ax7.grid(axis="x", alpha=0.15)
+    for spine in ax7.spines.values():
+        spine.set_color(C["gray"])
+        spine.set_alpha(0.3)
+
+    plt.savefig(os.path.join(output_dir, "hybrid_simulation_dashboard.png"),
+                dpi=150, bbox_inches="tight", facecolor=C["bg"])
+    plt.close()

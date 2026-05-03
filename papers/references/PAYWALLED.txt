@@ -1,0 +1,47 @@
+PAYWALLED / NON-ARXIV REFERENCES
+================================
+These cannot be auto-downloaded. Use your university library, Google Scholar,
+or the DOI link to retrieve.
+
+[01] Nielsen & Chuang, "Quantum Computation and Quantum Information",
+     Cambridge Univ. Press, 2010. [Textbook — buy or library]
+
+[16] Humble, T.S. et al., "Quantum computers for high-performance computing",
+     IEEE Micro, vol. 41, no. 5, pp. 15-23, 2021.
+     DOI: 10.1109/MM.2021.3099140
+     [IEEE Xplore — arXiv not available]
+
+[17] Suryotrisongko & Musashi, "Review of cybersecurity research topics,
+     taxonomy and challenges: Interdisciplinary perspective",
+     IEEE ICEBE, 2019.
+     DOI: 10.1109/ICEBE.2019.00038
+
+[18] Payares & Martinez-Santos, "Quantum machine learning for intrusion
+     detection of distributed denial of service attacks: a comparative
+     overview", SPIE Quantum Computing Communication Simulation, 2021.
+     DOI: 10.1117/12.2593297
+
+[20] Tavallaee et al., "A detailed analysis of the KDD CUP 99 data set",
+     IEEE CISDA, 2009.
+     DOI: 10.1109/CISDA.2009.5356528
+     [Dataset itself: https://www.unb.ca/cic/datasets/nsl.html]
+
+[21] Sharafaldin, Lashkari, Ghorbani, "Toward generating a new intrusion
+     detection dataset and intrusion traffic characterization",
+     ICISSP, 2018.
+     [Dataset: https://www.unb.ca/cic/datasets/ids-2017.html]
+
+[22] Cortes & Vapnik, "Support-vector networks",
+     Machine Learning, vol. 20, pp. 273-297, 1995.
+     DOI: 10.1007/BF00994018
+     [Springer — widely available as PDF via Google Scholar]
+
+[23] Auffeves, A., "Quantum technologies need a quantum energy initiative",
+     PRX Quantum, vol. 3, 020101, 2022.
+     DOI: 10.1103/PRXQuantum.3.020101
+     [Open access — https://journals.aps.org/prxquantum/abstract/10.1103/PRXQuantum.3.020101]
+
+[25] Qiskit contributors, "Qiskit: An open-source framework for quantum
+     computing", Zenodo, 2023.
+     DOI: 10.5281/zenodo.2573505
+     [Open access at Zenodo]

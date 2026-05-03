@@ -1,0 +1,57 @@
+======================================================================
+  HERO: Hybrid CPU + GPU + QPU Simulation - SUMMARY
+  Generated: 2026-04-26 14:58:51
+  Dataset: KDD Cup 99 (10% subset)
+  Multi-run: 30 iterations for statistical validation
+======================================================================
+
+PROCESSING UNIT UTILIZATION (single run)
+--------------------------------------------------
+  CPU:  12 tasks | 2.4779s | 312.22 J
+  GPU:  6 tasks | 0.0114s | 3.49 J
+  QPU:  4 tasks | 6.2798s | 45214.87 J
+
+  Total pipeline time: 11.86s
+  Total energy: 45530.58 J
+
+CLASSIFIER COMPARISON (single run)
+----------------------------------------------------------------------
+  Method                        Acc      F1    Prec     Rec    Time(s)  Energy(J)
+  --------------------------------------------------------------------
+  SVM (RBF)                  0.9750  0.9744  1.0000  0.9500     0.0078     0.9857
+  Random Forest              0.9970  0.9981  0.9992  0.9970     0.2218    27.9421
+  Grad. Boosting             0.9958  0.9974  0.9985  0.9962     0.4871    61.3780
+  KNN (k=5)                  0.9939  0.9962  0.9992  0.9932     1.7601   221.7699
+  QSVM (ZZ)                  0.8750  0.6667  1.0000  0.5000     1.4334 10320.5117
+
+
+MULTI-RUN STATISTICS (30 runs)
+----------------------------------------------------------------------
+  Method       Metric             Mean        Std
+  ----------------------------------------------
+  quantum      f1               0.6667     0.0000
+  quantum      accuracy         0.8750     0.0000
+  svm          f1               0.9744     0.0000
+  svm          accuracy         0.9750     0.0000
+  rf           f1               0.9981     0.0000
+  rf           accuracy         0.9970     0.0000
+  gbm          f1               0.9974     0.0000
+  gbm          accuracy         0.9958     0.0000
+  knn          f1               0.9962     0.0000
+  knn          accuracy         0.9939     0.0000
+
+  QAOA approximation ratio: 0.7641 +/- 0.0120
+
+
+MOLECULAR SIMULATION (H2, VQE) — 30 runs
+----------------------------------------------------------------------
+  Exact ground state:     -1.857275 Hartree
+  VQE estimate:           -1.854048 +/- 0.013235 Hartree
+  VQE error vs exact:     0.007001 +/- 0.011686 Hartree
+  Classical runtime:      0.2771 ms
+  VQE runtime:            4.1434 +/- 0.2635 s
+  Classical energy:       0.034915 J
+  VQE energy:             29832.68 +/- 1897.38 J
+  Quantum / Classical:    854,447 x more energy
+
+======================================================================

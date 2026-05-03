@@ -1,0 +1,7 @@
+workload,tier,service,runtime_s,cost_per_task_usd,cost_per_million_usd
+Cybersecurity,CPU,AWS EC2 c7i.4xlarge,0.010011,0.000002,1.99
+Cybersecurity,GPU,AWS g5.xlarge (NVIDIA A10G),0.001000,0.000000,0.28
+Cybersecurity,QPU,"AWS Braket (Rigetti Ankaa, 84 qubits)",1.437820,2.100000,2100000.00
+MolecularSim,CPU,AWS EC2 c7i.4xlarge,0.000277,0.000000,0.05
+MolecularSim,GPU,AWS g5.xlarge (NVIDIA A10G),0.001000,0.000000,0.28
+MolecularSim,QPU,"AWS Braket (Rigetti Ankaa, 84 qubits)",4.143427,3.900000,3900000.00
