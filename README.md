@@ -28,10 +28,10 @@ Two contrasting verdicts from 30-seed validation:
 
 | Workload | Best classical | Best quantum | Energy gap |
 |---|---|---|---|
-| **Cybersecurity (KDD Cup 99)** | Random Forest, F1 = 0.998 | QSVM, F1 = 0.667 | **Classical wins by ~13,000×** |
+| **Cybersecurity (KDD Cup 99)** | Random Forest, F1 = 0.998 | QSVM, F1 = 0.667 | **Classical wins by ~10,000×** |
 | **Molecular sim (H₂ via VQE)** | Exact diagonalisation, 0.04 J | VQE, 29,833 J | Classical wins for H₂; **quantum wins at n > 50 qubits** (classical RAM wall) |
 
-For cybersecurity workloads, classical Random Forest on a CPU costs **\$1.99 per million classifications**. The same workload on a quantum kernel via AWS Braket Rigetti costs **\$2,100,000 per million classifications**.
+For cybersecurity workloads, a classical SVM on a CPU costs **\$1.99 per million classifications**. The same workload on a quantum kernel via AWS Braket Rigetti costs **\$2,100,000 per million classifications**.
 
 ---
 
